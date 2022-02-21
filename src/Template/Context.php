@@ -21,6 +21,11 @@ namespace Jaxon\Utils\Template;
 class Context
 {
     /**
+     * @var Engine
+     */
+    private $__engine__;
+
+    /**
      * The constructor
      *
      * @param Engine $engine
