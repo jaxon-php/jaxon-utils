@@ -14,6 +14,10 @@
 
 namespace Jaxon\Utils\Config;
 
+use function is_array;
+use function realpath;
+use function is_readable;
+
 class Php
 {
     /**
@@ -22,19 +26,20 @@ class Php
      * @param string $sConfigFile The full path to the config file
      *
      * @return array
-     * @throws Exception\File
+     * @throws Exception\FileAccess
+     * @throws Exception\FileContent
      */
     public static function read(string $sConfigFile)
     {
         $sConfigFile = realpath($sConfigFile);
         if(!is_readable($sConfigFile))
         {
-            throw new Exception\File(jaxon_trans('errors.file.access', ['path' => $sConfigFile]));
+            throw new Exception\FileAccess($sConfigFile);
         }
         $aConfigOptions = include($sConfigFile);
         if(!is_array($aConfigOptions))
         {
-            throw new Exception\File(jaxon_trans('errors.file.content', ['path' => $sConfigFile]));
+            throw new Exception\FileContent($sConfigFile);
         }
 
         return $aConfigOptions;

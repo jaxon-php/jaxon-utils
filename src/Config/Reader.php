@@ -35,8 +35,11 @@ class Reader
      * @param string $sConfigFile The full path to the config file
      *
      * @return array
-     * @throws Exception\File
-     * @throws Exception\Yaml
+     * @throws Exception\DataDepth
+     * @throws Exception\FileAccess
+     * @throws Exception\FileExtension
+     * @throws Exception\FileContent
+     * @throws Exception\YamlExtension
      */
     public function read(string $sConfigFile)
     {
@@ -59,8 +62,7 @@ class Reader
             $aConfigOptions = Json::read($sConfigFile);
             break;
         default:
-            $sErrorMsg = jaxon_trans('errors.file.extension', ['path' => $sConfigFile]);
-            throw new Exception\File($sErrorMsg);
+            throw new Exception\FileExtension($sConfigFile);
         }
 
         return $aConfigOptions;
@@ -73,9 +75,11 @@ class Reader
      * @param string $sConfigSection The section of the config file to be loaded
      *
      * @return void
-     * @throws Exception\File
-     * @throws Exception\Yaml
-     * @throws Exception\Data
+     * @throws Exception\DataDepth
+     * @throws Exception\FileAccess
+     * @throws Exception\FileExtension
+     * @throws Exception\FileContent
+     * @throws Exception\YamlExtension
      */
     public function load(string $sConfigFile, string $sConfigSection = '')
     {

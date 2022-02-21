@@ -14,7 +14,6 @@
     },
     "require": {
         "php": ">=7.1",
-        "ext-json": "*",
         "lemonphp/event": "^1.0",
         "matthiasmullie/minify": "^1.3"
     },

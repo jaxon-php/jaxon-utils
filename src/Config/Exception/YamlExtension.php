@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Yaml.php - Yaml-specific exception.
+ * YamlExtension.php - YamlExtension-specific exception.
  *
- * This exception is thrown when an error related to Yaml occurs.
+ * This exception is thrown when an error related to YamlExtension occurs.
  * A typical example is when the php-yaml package is not installed.
  *
  * @package jaxon-core
@@ -15,13 +15,6 @@
 
 namespace Jaxon\Utils\Config\Exception;
 
-class Yaml extends \Exception
+class YamlExtension extends \Exception
 {
-    /**
-     * @param string $sMessage
-     */
-    public function __construct(string $sMessage)
-    {
-        parent::__construct($sMessage);
-    }
 }

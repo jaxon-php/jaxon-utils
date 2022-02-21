@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Data.php - Incorrect config data exception
+ * DataDepth.php - Incorrect config data exception
  *
  * This exception is thrown when config data are incorrect.
  *
@@ -14,13 +14,26 @@
 
 namespace Jaxon\Utils\Config\Exception;
 
-class Data extends \Exception
+class DataDepth extends \Exception
 {
     /**
-     * @param string $sMessage
+     * @var string
      */
-    public function __construct(string $sMessage)
+    public $sPrefix;
+
+    /**
+     * @var int
+     */
+    public $nDepth;
+
+    /**
+     * @param string $sPrefix
+     * @param int $nDepth
+     */
+    public function __construct(string $sPrefix, int $nDepth)
     {
-        parent::__construct($sMessage);
+        parent::__construct();
+        $this->sPrefix = $sPrefix;
+        $this->nDepth = $nDepth;
     }
 }

@@ -14,6 +14,19 @@
 
 namespace Jaxon\Utils\Config;
 
+use function count;
+use function is_int;
+use function is_array;
+use function trim;
+use function rtrim;
+use function intval;
+use function explode;
+use function array_key_exists;
+use function strlen;
+use function strpos;
+use function substr;
+
+
 class Config
 {
     /**
@@ -28,7 +41,8 @@ class Config
      *
      * @param array $aOptions The options array
      * @param string $sKeys The keys of the options in the array
-     * @throws Exception\Data
+     *
+     * @throws Exception\DataDepth
      */
     public function __construct(array $aOptions = [], string $sKeys = '')
     {
@@ -59,7 +73,7 @@ class Config
      * @param int $nDepth The depth from the first call
      *
      * @return void
-     * @throws Exception\Data
+     * @throws Exception\DataDepth
      */
     private function _setOptions(array $aOptions, string $sPrefix = '', $nDepth = 0)
     {
@@ -68,7 +82,7 @@ class Config
         // Check the max depth
         if($nDepth < 0 || $nDepth > 9)
         {
-            throw new Exception\Data(jaxon_trans('errors.data.depth', ['key' => $sPrefix, 'depth' => $nDepth]));
+            throw new Exception\DataDepth($sPrefix, $nDepth);
         }
         foreach($aOptions as $sName => $xOption)
         {
@@ -97,7 +111,7 @@ class Config
      * @param string $sKeys The keys of the options in the array
      *
      * @return Config
-     * @throws Exception\Data
+     * @throws Exception\DataDepth
      */
     public function setOptions(array $aOptions, string $sKeys = '')
     {

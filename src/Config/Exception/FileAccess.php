@@ -14,13 +14,19 @@
 
 namespace Jaxon\Utils\Config\Exception;
 
-class File extends \Exception
+class FileAccess extends \Exception
 {
     /**
-     * @param string $sMessage
+     * @var string
      */
-    public function __construct(string $sMessage)
+    public $sConfigFile;
+
+    /**
+     * @param string $sConfigFile
+     */
+    public function __construct(string $sConfigFile)
     {
-        parent::__construct($sMessage);
+        parent::__construct();
+        $this->sConfigFile = $sConfigFile;
     }
 }

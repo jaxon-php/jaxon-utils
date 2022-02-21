@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Yaml.php - Jaxon config reader
+ * YamlExtension.php - Jaxon config reader
  *
  * Read the config data from a YAML formatted config file.
  *
@@ -14,6 +14,12 @@
 
 namespace Jaxon\Utils\Config;
 
+use function is_array;
+use function realpath;
+use function is_readable;
+use function extension_loaded;
+use function yaml_parse_file;
+
 class Yaml
 {
     /**
@@ -22,24 +28,25 @@ class Yaml
      * @param string $sConfigFile The full path to the config file
      *
      * @return array
-     * @throws Exception\Yaml
-     * @throws Exception\File
+     * @throws Exception\YamlExtension
+     * @throws Exception\FileAccess
+     * @throws Exception\FileContent
      */
     public static function read(string $sConfigFile)
     {
         $sConfigFile = realpath($sConfigFile);
         if(!extension_loaded('yaml'))
         {
-            throw new Exception\Yaml(jaxon_trans('config.errors.yaml.install'));
+            throw new Exception\YamlExtension();
         }
         if(!is_readable($sConfigFile))
         {
-            throw new Exception\File(jaxon_trans('config.errors.file.access', ['path' => $sConfigFile]));
+            throw new Exception\FileAccess($sConfigFile);
         }
         $aConfigOptions = yaml_parse_file($sConfigFile);
         if(!is_array($aConfigOptions))
         {
-            throw new Exception\File(jaxon_trans('config.errors.file.content', ['path' => $sConfigFile]));
+            throw new Exception\FileContent($sConfigFile);
         }
 
         return $aConfigOptions;

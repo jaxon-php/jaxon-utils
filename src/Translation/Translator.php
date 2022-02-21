@@ -33,13 +33,6 @@ class Translator
     protected $sDefaultLocale = 'en';
 
     /**
-     * The directory containing the translations resources
-     *
-     * @var string
-     */
-    protected $sResourceDir;
-
-    /**
      * The translations
      *
      * @var array
@@ -126,7 +119,7 @@ class Translator
         $sText = trim($sText);
         if(!$sLanguage)
         {
-            $sLanguage = $this->xConfig->getOption('language');
+            $sLanguage = $this->xConfig->getOption('language', 'en');
         }
         if(!$sLanguage)
         {
