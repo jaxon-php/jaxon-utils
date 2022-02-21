@@ -42,8 +42,8 @@ class URI
     /**
      * Detect the URI of the current request
      *
-     * @return string        The URI
-     * @throws \Jaxon\Exception\URI
+     * @return string
+     * @throws Error
      */
     public function detect()
     {
@@ -53,10 +53,6 @@ class URI
         {
             $_SERVER['REQUEST_URI'] = str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $_SERVER['REQUEST_URI']);
             $aURL = parse_url($_SERVER['REQUEST_URI']);
-            if(!is_array($aURL))
-            {
-                $aURL = [];
-            }
         }
 
         // Fill in the empty values
@@ -77,7 +73,7 @@ class URI
         $this->getHostFromServer($aURL, 'SERVER_NAME');
         if(empty($aURL['host']))
         {
-            throw new \Jaxon\Exception\URI();
+            throw new Error();
         }
 
         if(empty($aURL['port']) && !empty($_SERVER['SERVER_PORT']))
@@ -156,7 +152,7 @@ class URI
             {
                 if("jxnGenerate" == substr($sQuery, 0, 11))
                 {
-                                    unset($aQueries[$sKey]);
+                    unset($aQueries[$sKey]);
                 }
             }
 
