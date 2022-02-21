@@ -77,7 +77,7 @@ class Config
      */
     private function _setOptions(array $aOptions, string $sPrefix = '', $nDepth = 0)
     {
-        $sPrefix = trim((string)$sPrefix);
+        $sPrefix = trim($sPrefix);
         $nDepth = intval($nDepth);
         // Check the max depth
         if($nDepth < 0 || $nDepth > 9)

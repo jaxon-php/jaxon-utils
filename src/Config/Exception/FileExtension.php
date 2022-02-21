@@ -14,7 +14,7 @@
 
 namespace Jaxon\Utils\Config\Exception;
 
-class FileExtention extends \Exception
+class FileExtension extends \Exception
 {
     /**
      * @var string
