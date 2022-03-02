@@ -14,18 +14,17 @@
 
 namespace Jaxon\Utils\Config;
 
+use Jaxon\Utils\Config\Exception\DataDepth;
+
 use function count;
-use function is_int;
-use function is_array;
 use function trim;
 use function rtrim;
-use function intval;
 use function explode;
-use function array_key_exists;
 use function strlen;
 use function strpos;
 use function substr;
-
+use function is_int;
+use function is_array;
 
 class Config
 {
@@ -42,7 +41,7 @@ class Config
      * @param array $aOptions The options array
      * @param string $sKeys The keys of the options in the array
      *
-     * @throws Exception\DataDepth
+     * @throws DataDepth
      */
     public function __construct(array $aOptions = [], string $sKeys = '')
     {
@@ -73,16 +72,15 @@ class Config
      * @param int $nDepth The depth from the first call
      *
      * @return void
-     * @throws Exception\DataDepth
+     * @throws DataDepth
      */
-    private function _setOptions(array $aOptions, string $sPrefix = '', $nDepth = 0)
+    private function _setOptions(array $aOptions, string $sPrefix = '', int $nDepth = 0)
     {
         $sPrefix = trim($sPrefix);
-        $nDepth = intval($nDepth);
         // Check the max depth
         if($nDepth < 0 || $nDepth > 9)
         {
-            throw new Exception\DataDepth($sPrefix, $nDepth);
+            throw new DataDepth($sPrefix, $nDepth);
         }
         foreach($aOptions as $sName => $xOption)
         {
@@ -108,20 +106,20 @@ class Config
      * Set the values of an array of config options
      *
      * @param array $aOptions The options array
-     * @param string $sKeys The keys of the options in the array
+     * @param string $sKeys The key prefix of the config options
      *
      * @return Config
-     * @throws Exception\DataDepth
+     * @throws DataDepth
      */
-    public function setOptions(array $aOptions, string $sKeys = '')
+    public function setOptions(array $aOptions, string $sKeys = ''): Config
     {
         // Find the config array in the input data
-        $aKeys = explode('.', (string)$sKeys);
+        $aKeys = explode('.', $sKeys);
         foreach($aKeys as $sKey)
         {
             if(($sKey))
             {
-                if(!array_key_exists($sKey, $aOptions) || !is_array($aOptions[$sKey]))
+                if(!isset($aOptions[$sKey]) || !is_array($aOptions[$sKey]))
                 {
                     return $this;
                 }
@@ -143,7 +141,7 @@ class Config
      */
     public function getOption(string $sName, $xDefault = null)
     {
-        return (array_key_exists($sName, $this->aOptions) ? $this->aOptions[$sName] : $xDefault);
+        return $this->aOptions[$sName] ?? $xDefault;
     }
 
     /**
@@ -153,9 +151,9 @@ class Config
      *
      * @return bool
      */
-    public function hasOption(string $sName)
+    public function hasOption(string $sName): bool
     {
-        return array_key_exists($sName, $this->aOptions);
+        return isset($this->aOptions[$sName]);
     }
 
     /**
@@ -165,7 +163,7 @@ class Config
      *
      * @return array
      */
-    public function getOptionNames(string $sPrefix)
+    public function getOptionNames(string $sPrefix): array
     {
         $sPrefix = rtrim(trim($sPrefix), '.') . '.';
         $sPrefixLen = strlen($sPrefix);
@@ -174,10 +172,10 @@ class Config
         {
             if(substr($sName, 0, $sPrefixLen) == $sPrefix)
             {
-                $iNextDotPos = strpos($sName, '.', $sPrefixLen);
-                $sOptionName = $iNextDotPos === false ?
+                $nNextDotPos = strpos($sName, '.', $sPrefixLen);
+                $sOptionName = $nNextDotPos === false ?
                     substr($sName, $sPrefixLen) :
-                    substr($sName, $sPrefixLen, $iNextDotPos - $sPrefixLen);
+                    substr($sName, $sPrefixLen, $nNextDotPos - $sPrefixLen);
                 $aOptions[$sOptionName] = $sPrefix . $sOptionName;
             }
         }

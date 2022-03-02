@@ -12,6 +12,9 @@
 
 namespace Jaxon\Utils\Config;
 
+use function trim;
+use function pathinfo;
+
 class Reader
 {
     /**
@@ -35,13 +38,12 @@ class Reader
      * @param string $sConfigFile The full path to the config file
      *
      * @return array
-     * @throws Exception\DataDepth
      * @throws Exception\FileAccess
      * @throws Exception\FileExtension
      * @throws Exception\FileContent
      * @throws Exception\YamlExtension
      */
-    public function read(string $sConfigFile)
+    public function read(string $sConfigFile): array
     {
         if(!($sConfigFile = trim($sConfigFile)))
         {
@@ -52,14 +54,14 @@ class Reader
         switch($sExt)
         {
         case 'php':
-            $aConfigOptions = Php::read($sConfigFile);
+            $aConfigOptions = File\Php::read($sConfigFile);
             break;
         case 'yaml':
         case 'yml':
-            $aConfigOptions = Yaml::read($sConfigFile);
+            $aConfigOptions = File\Yaml::read($sConfigFile);
             break;
         case 'json':
-            $aConfigOptions = Json::read($sConfigFile);
+            $aConfigOptions = File\Json::read($sConfigFile);
             break;
         default:
             throw new Exception\FileExtension($sConfigFile);

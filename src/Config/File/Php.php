@@ -12,7 +12,10 @@
  * @link https://github.com/jaxon-php/jaxon-core
  */
 
-namespace Jaxon\Utils\Config;
+namespace Jaxon\Utils\Config\File;
+
+use Jaxon\Utils\Config\Exception\FileAccess;
+use Jaxon\Utils\Config\Exception\FileContent;
 
 use function is_array;
 use function realpath;
@@ -26,20 +29,20 @@ class Php
      * @param string $sConfigFile The full path to the config file
      *
      * @return array
-     * @throws Exception\FileAccess
-     * @throws Exception\FileContent
+     * @throws FileAccess
+     * @throws FileContent
      */
-    public static function read(string $sConfigFile)
+    public static function read(string $sConfigFile): array
     {
         $sConfigFile = realpath($sConfigFile);
         if(!is_readable($sConfigFile))
         {
-            throw new Exception\FileAccess($sConfigFile);
+            throw new FileAccess($sConfigFile);
         }
         $aConfigOptions = include($sConfigFile);
         if(!is_array($aConfigOptions))
         {
-            throw new Exception\FileContent($sConfigFile);
+            throw new FileContent($sConfigFile);
         }
 
         return $aConfigOptions;
