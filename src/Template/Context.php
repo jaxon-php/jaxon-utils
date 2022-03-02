@@ -29,10 +29,16 @@ class Context
      * The constructor
      *
      * @param Engine $engine
+     * @param array $aVars The template vars
      */
-    public function __construct(Engine $engine)
+    public function __construct(Engine $engine, array $aVars)
     {
         $this->__engine__ = $engine;
+        foreach($aVars as $sName => $xValue)
+        {
+            $sName = (string)$sName;
+            $this->$sName = $xValue;
+        }
     }
 
     /**
@@ -43,8 +49,21 @@ class Context
      *
      * @return string
      */
-    public function render(string $sTemplate, array $aVars = [])
+    public function render(string $sTemplate, array $aVars = []): string
     {
         return $this->__engine__->render($sTemplate, $aVars);
+    }
+
+    /**
+     * Include a template
+     *
+     * @param string $sTemplate The name of template to be rendered
+     * @param array $aVars The template vars
+     *
+     * @return void
+     */
+    public function include(string $sTemplate, array $aVars = [])
+    {
+        echo $this->render($sTemplate, $aVars);
     }
 }

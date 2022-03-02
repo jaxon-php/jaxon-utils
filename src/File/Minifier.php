@@ -16,6 +16,8 @@ namespace Jaxon\Utils\File;
 
 use MatthiasMullie\Minify\JS as JsMinifier;
 
+use function is_file;
+
 class Minifier
 {
     /**
@@ -24,9 +26,9 @@ class Minifier
      * @param string $sJsFile The javascript file to be minified
      * @param string $sMinFile The minified javascript file
      *
-     * @return boolean        True if the file was minified
+     * @return bool
      */
-    public function minify(string $sJsFile, string $sMinFile)
+    public function minify(string $sJsFile, string $sMinFile): bool
     {
         $xJsMinifier = new JsMinifier();
         $xJsMinifier->add($sJsFile);

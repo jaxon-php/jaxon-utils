@@ -26,149 +26,150 @@ use function str_replace;
 class URI
 {
     /**
-     * @param array $aUrl
+     * The URL components
+     * 
+     * @var array
+     */
+    protected $aUrl;
+
+    /**
+     * @param array $server The HTTP request server data
      *
      * @return void
      */
-    private function setScheme(array &$aUrl)
+    private function setScheme(array $server)
     {
-        if(!empty($aUrl['scheme']))
+        if(isset($this->aUrl['scheme']))
         {
             return;
         }
-        if(!empty($_SERVER['HTTP_SCHEME']))
+        if(isset($server['HTTP_SCHEME']))
         {
-            $aUrl['scheme'] = $_SERVER['HTTP_SCHEME'];
+            $this->aUrl['scheme'] = $server['HTTP_SCHEME'];
             return;
         }
-        $aUrl['scheme'] = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off') ? 'https' : 'http';
+        $this->aUrl['scheme'] = (isset($server['HTTPS']) && strtolower($server['HTTPS']) != 'off') ? 'https' : 'http';
     }
 
     /**
-     * Get the URL from the $_SERVER var
+     * Get the URL from the $server var
      *
-     * @param array $aUrl The URL data
-     * @param string $sKey The key in the $_SERVER array
+     * @param array $server The HTTP request server data
+     * @param string $sKey The key in the $server array
      *
      * @return void
      */
-    private function setHostFromServer(array &$aUrl, string $sKey)
+    private function setHostFromServer(array $server, string $sKey)
     {
-        if(!empty($aUrl['host']) && !empty($_SERVER[$sKey]))
+        if(isset($this->aUrl['host']) && isset($server[$sKey]))
         {
             return;
         }
-        if(strpos($_SERVER[$sKey], ':') === false)
+        if(strpos($server[$sKey], ':') === false)
         {
-            $aUrl['host'] = $_SERVER[$sKey];
+            $this->aUrl['host'] = $server[$sKey];
             return;
         }
-        list($aUrl['host'], $aUrl['port']) = explode(':', $_SERVER[$sKey]);
+        list($this->aUrl['host'], $this->aUrl['port']) = explode(':', $server[$sKey]);
     }
 
     /**
-     * @param array $aUrl
+     * @param array $server The HTTP request server data
      *
      * @return void
      * @throws Error
      */
-    private function setHost(array &$aUrl)
+    private function setHost(array $server)
     {
-        $this->setHostFromServer($aUrl, 'HTTP_X_FORWARDED_HOST');
-        $this->setHostFromServer($aUrl, 'HTTP_HOST');
-        $this->setHostFromServer($aUrl, 'SERVER_NAME');
-        if(empty($aUrl['host']))
+        $this->setHostFromServer($server, 'HTTP_X_FORWARDED_HOST');
+        $this->setHostFromServer($server, 'HTTP_HOST');
+        $this->setHostFromServer($server, 'SERVER_NAME');
+        if(empty($this->aUrl['host']))
         {
             throw new Error();
         }
-        if(empty($aUrl['port']) && !empty($_SERVER['SERVER_PORT']))
+        if(empty($this->aUrl['port']) && isset($server['SERVER_PORT']))
         {
-            $aUrl['port'] = $_SERVER['SERVER_PORT'];
+            $this->aUrl['port'] = $server['SERVER_PORT'];
         }
     }
 
     /**
-     * @param array $aUrl
+     * @param array $server The HTTP request server data
      *
      * @return void
      */
-    private function setPath(array &$aUrl)
+    private function setPath(array $server)
     {
-        if(!empty($aUrl['path']) && strlen(basename($aUrl['path'])) === 0)
+        if(isset($this->aUrl['path']) && strlen(basename($this->aUrl['path'])) === 0)
         {
-            unset($aUrl['path']);
+            unset($this->aUrl['path']);
         }
-        if(!empty($aUrl['path']))
+        if(isset($this->aUrl['path']))
         {
             return;
         }
-        $sPath = parse_url(!empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : $_SERVER['PHP_SELF']);
-        if(isset($sPath['path']))
+        $aPath = parse_url(isset($server['PATH_INFO']) ? $server['PATH_INFO'] : $server['PHP_SELF']);
+        if(isset($aPath['path']))
         {
-            $aUrl['path'] = str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $sPath['path']);
+            $this->aUrl['path'] = str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $aPath['path']);
         }
     }
 
     /**
-     * @param array $aUrl
-     *
      * @return string
      */
-    private function getUser(array $aUrl)
+    private function getUser(): string
     {
-        if(empty($aUrl['user']))
+        if(empty($this->aUrl['user']))
         {
             return '';
         }
-        $sUrl = $aUrl['user'];
-        if(!empty($aUrl['pass']))
+        $sUrl = $this->aUrl['user'];
+        if(isset($this->aUrl['pass']))
         {
-            $sUrl .= ':' . $aUrl['pass'];
+            $sUrl .= ':' . $this->aUrl['pass'];
         }
         return $sUrl . '@';
     }
 
     /**
-     * @param array $aUrl
-     *
      * @return string
      */
-    private function getPort(array $aUrl)
+    private function getPort(): string
     {
-        if(!empty($aUrl['port']) &&
-            (($aUrl['scheme'] === 'http' && $aUrl['port'] != 80) ||
-                ($aUrl['scheme'] === 'https' && $aUrl['port'] != 443)))
+        if(isset($this->aUrl['port']) &&
+            (($this->aUrl['scheme'] === 'http' && $this->aUrl['port'] != 80) ||
+                ($this->aUrl['scheme'] === 'https' && $this->aUrl['port'] != 443)))
         {
-            return ':' . $aUrl['port'];
+            return ':' . $this->aUrl['port'];
         }
         return '';
     }
 
     /**
-     * @param array $aUrl
+     * @param array $server The HTTP request server data
      *
      * @return void
      */
-    private function setQuery(array &$aUrl)
+    private function setQuery(array $server)
     {
-        if(empty($aUrl['query']))
+        if(empty($this->aUrl['query']))
         {
-            $aUrl['query'] = empty($_SERVER['QUERY_STRING']) ? '' : $_SERVER['QUERY_STRING'];
+            $this->aUrl['query'] = empty($server['QUERY_STRING']) ? '' : $server['QUERY_STRING'];
         }
     }
 
     /**
-     * @param array $aUrl
-     *
      * @return string
      */
-    private function getQuery(array $aUrl)
+    private function getQuery(): string
     {
-        if(empty($aUrl['query']))
+        if(empty($this->aUrl['query']))
         {
             return '';
         }
-        $aQueries = explode("&", $aUrl['query']);
+        $aQueries = explode("&", $this->aUrl['query']);
         foreach($aQueries as $sKey => $sQuery)
         {
             if(substr($sQuery, 0, 11) === 'jxnGenerate')
@@ -181,28 +182,30 @@ class URI
 
     /**
      * Detect the URI of the current request
+     * 
+     * @param array $server The server data in the HTTP request
      *
      * @return string
      * @throws Error
      */
-    public function detect()
+    public function detect(array $server): string
     {
-        $aUrl = [];
+        $this->aUrl = [];
         // Try to get the request URL
-        if(!empty($_SERVER['REQUEST_URI']))
+        if(isset($server['REQUEST_URI']))
         {
-            $_SERVER['REQUEST_URI'] = str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $_SERVER['REQUEST_URI']);
-            $aUrl = parse_url($_SERVER['REQUEST_URI']);
+            $sUri = str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $server['REQUEST_URI']);
+            $this->aUrl = parse_url($sUri);
         }
 
         // Fill in the empty values
-        $this->setScheme($aUrl);
-        $this->setHost($aUrl);
-        $this->setPath($aUrl);
-        $this->setQuery($aUrl);
+        $this->setScheme($server);
+        $this->setHost($server);
+        $this->setPath($server);
+        $this->setQuery($server);
 
         // Build the URL: Start with scheme, user and pass
-        return $aUrl['scheme'] . '://' . $this->getUser($aUrl) . $aUrl['host'] .
-            $this->getPort($aUrl) . $aUrl['path'] . $this->getQuery($aUrl);
+        return $this->aUrl['scheme'] . '://' . $this->getUser() . $this->aUrl['host'] .
+            $this->getPort() . $this->aUrl['path'] . $this->getQuery();
     }
 }

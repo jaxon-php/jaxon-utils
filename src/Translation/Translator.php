@@ -14,17 +14,16 @@
 
 namespace Jaxon\Utils\Translation;
 
-use Jaxon\Utils\Config\Config;
+use function trim;
+use function file_exists;
+use function is_array;
+use function str_replace;
+use function array_map;
+use function array_keys;
+use function array_values;
 
 class Translator
 {
-    /**
-     * The current configuration
-     *
-     * @var Config
-     */
-    protected $xConfig;
-
     /**
      * The default locale
      *
@@ -42,12 +41,14 @@ class Translator
     /**
      * The constructor
      *
-     * @param Config    $xConfig
+     * @param string $sDefaultLocale
      */
-    public function __construct(Config $xConfig)
+    public function __construct(string $sDefaultLocale)
     {
-        // Set the config manager
-        $this->xConfig = $xConfig;
+        if(($sDefaultLocale))
+        {
+            $this->sDefaultLocale = $sDefaultLocale;
+        }
     }
 
     /**
@@ -65,15 +66,15 @@ class Translator
         {
             $sName = trim($sName);
             $sName = ($sPrefix) ? $sPrefix . '.' . $sName : $sName;
-            if(!is_array($xTranslation))
-            {
-                // Save this translation
-                $this->aTranslations[$sLanguage][$sName] = $xTranslation;
-            }
-            else
+            if(is_array($xTranslation))
             {
                 // Recursively read the translations in the array
                 $this->_loadTranslations($sLanguage, $sName, $xTranslation);
+            }
+            else
+            {
+                // Save this translation
+                $this->aTranslations[$sLanguage][$sName] = $xTranslation;
             }
         }
     }
@@ -98,7 +99,7 @@ class Translator
             return;
         }
         // Load the translations
-        if(!array_key_exists($sLanguage, $this->aTranslations))
+        if(!isset($this->aTranslations[$sLanguage]))
         {
             $this->aTranslations[$sLanguage] = [];
         }
@@ -112,28 +113,27 @@ class Translator
      * @param array $aPlaceHolders The placeholders of the translated string
      * @param string $sLanguage The language of the translated string
      *
-     * @return string        The translated string
+     * @return string
      */
-    public function trans(string $sText, array $aPlaceHolders = [], string $sLanguage = '')
+    public function trans(string $sText, array $aPlaceHolders = [], string $sLanguage = ''): string
     {
         $sText = trim($sText);
         if(!$sLanguage)
         {
-            $sLanguage = $this->xConfig->getOption('language', 'en');
-        }
-        if(!$sLanguage)
-        {
             $sLanguage = $this->sDefaultLocale;
         }
-        if(!array_key_exists($sLanguage, $this->aTranslations) || !array_key_exists($sText, $this->aTranslations[$sLanguage]))
+        if(!isset($this->aTranslations[$sLanguage][$sLanguage]))
         {
             return $sText;
         }
-        $message = $this->aTranslations[$sLanguage][$sText];
-        foreach($aPlaceHolders as $name => $value)
+        $sMessage = $this->aTranslations[$sLanguage][$sText];
+        if(($aPlaceHolders))
         {
-            $message = str_replace(':' . $name, $value, $message);
+            $aNames = array_map(function($sName) {
+                return ':' . $sName;
+            }, array_keys($aPlaceHolders));
+            $sMessage = str_replace($aNames, array_values($aPlaceHolders), $sMessage);
         }
-        return $message;
+        return $sMessage;
     }
 }

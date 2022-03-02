@@ -14,6 +14,14 @@
 
 namespace Jaxon\Utils\Template;
 
+use function trim;
+use function rtrim;
+use function substr;
+use function strrpos;
+use function ob_start;
+use function ob_get_clean;
+use function call_user_func;
+
 class Engine
 {
     /**
@@ -60,24 +68,19 @@ class Engine
      *
      * @return string
      */
-    private function _render(string $sPath, array $aVars)
+    private function renderTemplate(string $sPath, array $aVars): string
     {
-        // Make the template vars available, throught a Context object.
-        $xContext = new Context($this);
-        foreach($aVars as $sName => $xValue)
-        {
-            $sName = (string)$sName;
-            $xContext->$sName = $xValue;
-        }
+        // Make the template vars available throught a Context object.
+        $xContext = new Context($this, $aVars);
         // Render the template
-        $cRenderer = function($_sPath) {
+        $cRenderer = function() use($sPath) {
             ob_start();
-            include($_sPath);
+            include($sPath);
             return ob_get_clean();
         };
         // Call the closure in the context of the $xContext object.
         // So the keyword '$this' in the template will refer to the $xContext object.
-        return \call_user_func($cRenderer->bindTo($xContext), $sPath);
+        return call_user_func($cRenderer->bindTo($xContext));
     }
 
     /**
@@ -88,16 +91,16 @@ class Engine
      *
      * @return string
      */
-    public function render(string $sTemplate, array $aVars = [])
+    public function render(string $sTemplate, array $aVars = []): string
     {
         $sTemplate = trim($sTemplate);
         // Get the namespace name
         $sNamespace = '';
-        $iSeparatorPosition = strrpos($sTemplate, '::');
-        if($iSeparatorPosition !== false)
+        $nSeparatorPosition = strrpos($sTemplate, '::');
+        if($nSeparatorPosition !== false)
         {
-            $sNamespace = substr($sTemplate, 0, $iSeparatorPosition);
-            $sTemplate = substr($sTemplate, $iSeparatorPosition + 2);
+            $sNamespace = substr($sTemplate, 0, $nSeparatorPosition);
+            $sTemplate = substr($sTemplate, $nSeparatorPosition + 2);
         }
         // The default namespace is 'jaxon'
         if(!($sNamespace = trim($sNamespace)))
@@ -105,7 +108,7 @@ class Engine
             $sNamespace = 'jaxon';
         }
         // Check if the namespace is defined
-        if(!key_exists($sNamespace, $this->aNamespaces))
+        if(!isset($this->aNamespaces[$sNamespace]))
         {
             return '';
         }
@@ -113,6 +116,6 @@ class Engine
         // Get the template path
         $sTemplatePath = $aNamespace['directory'] . $sTemplate . $aNamespace['extension'];
         // Render the template
-        return $this->_render($sTemplatePath, $aVars);
+        return $this->renderTemplate($sTemplatePath, $aVars);
     }
 }
