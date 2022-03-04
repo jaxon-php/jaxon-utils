@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Error.php - Error detection error
+ * UriException.php - URI detection error
  *
- * This exception is thrown when the Error cannot be autmatically detected.
+ * This exception is thrown when the URI cannot be automatically detected.
  *
  * @package jaxon-core
  * @author Thierry Feuzeu <thierry.feuzeu@gmail.com>
@@ -14,6 +14,6 @@
 
 namespace Jaxon\Utils\Http;
 
-class Error extends \Exception
+class UriException extends \Exception
 {
 }

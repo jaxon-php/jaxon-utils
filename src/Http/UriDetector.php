@@ -1,7 +1,7 @@
 <?php
 
 /**
- * URI.php - Jaxon request URI detector
+ * UriDetector.php - Jaxon request UriDetector detector
  *
  * Detect and parse the URI of the Jaxon request being processed.
  *
@@ -23,7 +23,7 @@ use function basename;
 use function parse_url;
 use function str_replace;
 
-class URI
+class UriDetector
 {
     /**
      * The URL components
@@ -77,7 +77,7 @@ class URI
      * @param array $server The HTTP request server data
      *
      * @return void
-     * @throws Error
+     * @throws UriException
      */
     private function setHost(array $server)
     {
@@ -86,7 +86,7 @@ class URI
         $this->setHostFromServer($server, 'SERVER_NAME');
         if(empty($this->aUrl['host']))
         {
-            throw new Error();
+            throw new UriException();
         }
         if(empty($this->aUrl['port']) && isset($server['SERVER_PORT']))
         {
@@ -109,7 +109,7 @@ class URI
         {
             return;
         }
-        $aPath = parse_url(isset($server['PATH_INFO']) ? $server['PATH_INFO'] : $server['PHP_SELF']);
+        $aPath = parse_url($server['PATH_INFO'] ?? $server['PHP_SELF']);
         if(isset($aPath['path']))
         {
             $this->aUrl['path'] = str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $aPath['path']);
@@ -181,12 +181,12 @@ class URI
     }
 
     /**
-     * Detect the URI of the current request
+     * Detect the UriDetector of the current request
      * 
      * @param array $server The server data in the HTTP request
      *
      * @return string
-     * @throws Error
+     * @throws UriException
      */
     public function detect(array $server): string
     {
