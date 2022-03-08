@@ -122,7 +122,7 @@ class Translator
         {
             $sLanguage = $this->sDefaultLocale;
         }
-        if(!isset($this->aTranslations[$sLanguage][$sLanguage]))
+        if(!isset($this->aTranslations[$sLanguage][$sText]))
         {
             return $sText;
         }
