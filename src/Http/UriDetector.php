@@ -61,7 +61,7 @@ class UriDetector
      */
     private function setHostFromServer(array $server, string $sKey)
     {
-        if(isset($this->aUrl['host']) && isset($server[$sKey]))
+        if(isset($this->aUrl['host']) || empty($server[$sKey]))
         {
             return;
         }
