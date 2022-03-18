@@ -18,21 +18,6 @@ use function pathinfo;
 class Reader
 {
     /**
-     * @var Config
-     */
-    protected $xConfig;
-
-    /**
-     * The class constructor
-     *
-     * @param Config $xConfig
-     */
-    public function __construct(Config $xConfig)
-    {
-        $this->xConfig = $xConfig;
-    }
-
-    /**
      * Read options from a config file
      *
      * @param string $sConfigFile The full path to the config file
@@ -73,6 +58,7 @@ class Reader
     /**
      * Read options from a config file and setup the library
      *
+     * @param Config $xConfig
      * @param string $sConfigFile The full path to the config file
      * @param string $sConfigSection The section of the config file to be loaded
      *
@@ -83,10 +69,9 @@ class Reader
      * @throws Exception\FileContent
      * @throws Exception\YamlExtension
      */
-    public function load(string $sConfigFile, string $sConfigSection = '')
+    public function load(Config $xConfig, string $sConfigFile, string $sConfigSection = '')
     {
-        $aConfigOptions = $this->read($sConfigFile);
-        // Set up the lib config options.
-        $this->xConfig->setOptions($aConfigOptions, $sConfigSection);
+        // Read the options and save in the config.
+        $xConfig->setOptions($this->read($sConfigFile), $sConfigSection);
     }
 }
