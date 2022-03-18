@@ -127,7 +127,7 @@ class Translator
             return $sText;
         }
         $sMessage = $this->aTranslations[$sLanguage][$sText];
-        if(($aPlaceHolders))
+        if(!empty($aPlaceHolders))
         {
             $aNames = array_map(function($sName) {
                 return ':' . $sName;
