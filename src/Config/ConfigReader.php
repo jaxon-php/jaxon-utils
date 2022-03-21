@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Reader.php - Jaxon config reader
+ * ConfigReader.php - Jaxon config reader
  *
  * @package jaxon-core
  * @author Thierry Feuzeu <thierry.feuzeu@gmail.com>
@@ -15,7 +15,7 @@ namespace Jaxon\Utils\Config;
 use function trim;
 use function pathinfo;
 
-class Reader
+class ConfigReader
 {
     /**
      * Read options from a config file

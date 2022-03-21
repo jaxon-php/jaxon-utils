@@ -52,7 +52,7 @@ class Translator
     }
 
     /**
-     * Recursively load translated strings from a array
+     * Recursively load translated strings from an array
      *
      * @param string $sLanguage The language of the translations
      * @param string $sPrefix The prefix for names
@@ -62,19 +62,19 @@ class Translator
      */
     private function _loadTranslations(string $sLanguage, string $sPrefix, array $aTranslations)
     {
-        foreach($aTranslations as $sName => $xTranslation)
+        foreach($aTranslations as $sKey => $xTranslation)
         {
-            $sName = trim($sName);
-            $sName = ($sPrefix) ? $sPrefix . '.' . $sName : $sName;
+            $sKey = trim($sKey);
+            $sKey = ($sPrefix) ? $sPrefix . '.' . $sKey : $sKey;
             if(is_array($xTranslation))
             {
                 // Recursively read the translations in the array
-                $this->_loadTranslations($sLanguage, $sName, $xTranslation);
+                $this->_loadTranslations($sLanguage, $sKey, $xTranslation);
             }
             else
             {
                 // Save this translation
-                $this->aTranslations[$sLanguage][$sName] = $xTranslation;
+                $this->aTranslations[$sLanguage][$sKey] = $xTranslation;
             }
         }
     }
@@ -118,7 +118,7 @@ class Translator
     public function trans(string $sText, array $aPlaceHolders = [], string $sLanguage = ''): string
     {
         $sText = trim($sText);
-        if(!$sLanguage)
+        if(empty($sLanguage))
         {
             $sLanguage = $this->sDefaultLocale;
         }
@@ -129,10 +129,10 @@ class Translator
         $sMessage = $this->aTranslations[$sLanguage][$sText];
         if(!empty($aPlaceHolders))
         {
-            $aNames = array_map(function($sName) {
-                return ':' . $sName;
+            $aVars = array_map(function($sVar) {
+                return ':' . $sVar;
             }, array_keys($aPlaceHolders));
-            $sMessage = str_replace($aNames, array_values($aPlaceHolders), $sMessage);
+            $sMessage = str_replace($aVars, array_values($aPlaceHolders), $sMessage);
         }
         return $sMessage;
     }

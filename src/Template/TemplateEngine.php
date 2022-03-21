@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Engine.php - Template engine
+ * TemplateEngine.php - Template engine
  *
  * Generate templates with template vars.
  *
@@ -22,7 +22,7 @@ use function ob_start;
 use function ob_get_clean;
 use function call_user_func;
 
-class Engine
+class TemplateEngine
 {
     /**
      * The namespaces
@@ -70,7 +70,7 @@ class Engine
      */
     private function renderTemplate(string $sPath, array $aVars): string
     {
-        // Make the template vars available throught a Context object.
+        // Make the template vars available in a Context object.
         $xContext = new Context($this, $aVars);
         // Render the template
         $cRenderer = function() use($sPath) {
@@ -78,7 +78,7 @@ class Engine
             include($sPath);
             return ob_get_clean();
         };
-        // Call the closure in the context of the $xContext object.
+        // Call the closure in the context of the Context object.
         // So the keyword '$this' in the template will refer to the $xContext object.
         return call_user_func($cRenderer->bindTo($xContext));
     }

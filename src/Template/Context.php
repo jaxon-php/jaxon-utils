@@ -21,17 +21,17 @@ namespace Jaxon\Utils\Template;
 class Context
 {
     /**
-     * @var Engine
+     * @var TemplateEngine
      */
     private $__engine__;
 
     /**
      * The constructor
      *
-     * @param Engine $engine
+     * @param TemplateEngine $engine
      * @param array $aVars The template vars
      */
-    public function __construct(Engine $engine, array $aVars)
+    public function __construct(TemplateEngine $engine, array $aVars)
     {
         $this->__engine__ = $engine;
         foreach($aVars as $sName => $xValue)
