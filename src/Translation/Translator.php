@@ -39,15 +39,17 @@ class Translator
     protected $aTranslations = [];
 
     /**
-     * The constructor
+     * Set the default locale
      *
-     * @param string $sDefaultLocale
+     * @param string $sLocale
+     *
+     * @return void
      */
-    public function __construct(string $sDefaultLocale)
+    public function setLocale(string $sLocale)
     {
-        if(($sDefaultLocale))
+        if(($sLocale = trim($sLocale)))
         {
-            $this->sDefaultLocale = $sDefaultLocale;
+            $this->sDefaultLocale = $sLocale;
         }
     }
 
