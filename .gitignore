@@ -4,3 +4,4 @@ jaxon-core.komodoproject
 vendor/
 composer.lock
 .idea
+tests/minifier/dst.min.js
