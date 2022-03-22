@@ -14,12 +14,54 @@
 
 namespace Jaxon\Utils\File;
 
-use MatthiasMullie\Minify\JS as JsMinifier;
+use JShrink\Minifier;
 
+use Exception;
+
+use function file_get_contents;
+use function file_put_contents;
 use function is_file;
 
 class FileMinifier
 {
+    /**
+     * Read the file content
+     *
+     * @param string $sPath
+     *
+     * @return string|false
+     */
+    private function readFile(string $sPath)
+    {
+        try
+        {
+            return file_get_contents($sPath);
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Read the file content
+     *
+     * @param string $sCode
+     *
+     * @return string|false
+     */
+    private function minifyCode(string $sCode)
+    {
+        try
+        {
+            return Minifier::minify($sCode);
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+    }
+
     /**
      * Minify javascript code
      *
@@ -30,9 +72,12 @@ class FileMinifier
      */
     public function minify(string $sJsFile, string $sMinFile): bool
     {
-        $xJsMinifier = new JsMinifier();
-        $xJsMinifier->add($sJsFile);
-        $xJsMinifier->minify($sMinFile);
+        if(($sJsCode = $this->readFile($sJsFile)) === false ||
+            ($sMinCode = $this->minifyCode($sJsCode)) === false)
+        {
+            return false;
+        }
+        file_put_contents($sMinFile, $sMinCode);
         return is_file($sMinFile);
     }
 }
