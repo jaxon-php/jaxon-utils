@@ -177,13 +177,17 @@ class UriDetector
         {
             return '';
         }
-        $aQueries = explode("&", $this->aUrl['query']);
+        $aQueries = explode('&', $this->aUrl['query']);
         foreach($aQueries as $sKey => $sQuery)
         {
             if(substr($sQuery, 0, 11) === 'jxnGenerate')
             {
                 unset($aQueries[$sKey]);
             }
+        }
+        if(empty($aQueries))
+        {
+            return '';
         }
         return '?' . implode("&", $aQueries);
     }

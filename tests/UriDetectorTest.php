@@ -2,6 +2,7 @@
 
 namespace Jaxon\Utils\Tests;
 
+use Jaxon\Utils\Http\UriException;
 use PHPUnit\Framework\TestCase;
 use Jaxon\Utils\Http\UriDetector;
 
@@ -31,6 +32,27 @@ final class UriDetectorTest extends TestCase
                 'REQUEST_URI' => 'http://example.test/path?param1=value1&param2="value2"',
             ])
         );
+    }
+
+    public function testUriWithUser()
+    {
+        $this->assertEquals('http://user@example.test/path', $this->xUriDetector->detect([
+            'REQUEST_URI' => 'http://user@example.test/path'
+        ]));
+    }
+
+    public function testUriWithUserAndPass()
+    {
+        $this->assertEquals('http://user:pass@example.test/path', $this->xUriDetector->detect([
+            'REQUEST_URI' => 'http://user:pass@example.test/path'
+        ]));
+    }
+
+    public function testUriWithEmptyBasename()
+    {
+        $this->assertEquals('http://example.test/', $this->xUriDetector->detect([
+            'REQUEST_URI' => 'http://example.test//'
+        ]));
     }
 
     public function testUriWithParts()
@@ -68,5 +90,27 @@ final class UriDetectorTest extends TestCase
                 'QUERY_STRING' => 'param1=value1&param2="value2"',
             ])
         );
+    }
+
+    public function testRemoveJaxonParam()
+    {
+        $this->assertEquals('http://example.test/path', $this->xUriDetector->detect([
+            'REQUEST_URI' => 'http://example.test/path?jxnGenerate=true'
+        ]));
+        $this->assertEquals('http://example.test/path?param1=value1&param2=%22value2%22',
+            $this->xUriDetector->detect([
+                'REQUEST_URI' => 'http://example.test/path?param1=value1&jxnGenerate=true&param2="value2"',
+            ])
+        );
+    }
+
+    public function testErrorMissingHost()
+    {
+        $this->expectException(UriException::class);
+        $this->xUriDetector->detect([
+            'HTTPS' => 'on',
+            'PATH_INFO' => '/path',
+            'QUERY_STRING' => 'param1=value1&param2="value2"',
+        ]);
     }
 }
