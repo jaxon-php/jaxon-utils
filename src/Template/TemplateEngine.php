@@ -49,18 +49,6 @@ class TemplateEngine
     }
 
     /**
-     * Set a new directory for pagination templates
-     *
-     * @param string $sDirectory The directory path
-     *
-     * @return void
-     */
-    public function pagination(string $sDirectory)
-    {
-        $this->aNamespaces['pagination']['directory'] = rtrim(trim($sDirectory), "/\\") . DIRECTORY_SEPARATOR;
-    }
-
-    /**
      * Render a template
      *
      * @param string $sPath The path to the template
@@ -70,6 +58,10 @@ class TemplateEngine
      */
     private function renderTemplate(string $sPath, array $aVars): string
     {
+        if(!is_readable($sPath))
+        {
+            return '';
+        }
         // Make the template vars available in a Context object.
         $xContext = new Context($this, $aVars);
         // Render the template
@@ -101,11 +93,6 @@ class TemplateEngine
         {
             $sNamespace = substr($sTemplate, 0, $nSeparatorPosition);
             $sTemplate = substr($sTemplate, $nSeparatorPosition + 2);
-        }
-        // The default namespace is 'jaxon'
-        if(!($sNamespace = trim($sNamespace)))
-        {
-            $sNamespace = 'jaxon';
         }
         // Check if the namespace is defined
         if(!isset($this->aNamespaces[$sNamespace]))
