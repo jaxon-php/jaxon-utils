@@ -24,6 +24,8 @@ cache:
 before_install:
     - if [ -n "$GH_TOKEN" ]; then composer config github-oauth.github.com ${GH_TOKEN}; fi;
     - composer self-update
+    - pecl channel-update pecl.php.net
+    - (CFLAGS="-O1 -g3 -fno-strict-aliasing"; pecl install yaml < /dev/null &)
 
 install:
     - composer install --no-interaction --prefer-dist -o
