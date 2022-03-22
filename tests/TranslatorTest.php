@@ -19,6 +19,16 @@ final class TranslatorTest extends TestCase
         $this->xTranslator->loadTranslations(__DIR__ . '/translations/test.fr.php', 'fr');
     }
 
+    public function testFileWithBadData()
+    {
+        $this->assertFalse($this->xTranslator->loadTranslations(__DIR__ . '/translations/error.php', 'en'));
+    }
+
+    public function testFileNotFound()
+    {
+        $this->assertFalse($this->xTranslator->loadTranslations(__DIR__ . '/translations/not-found.php', 'en'));
+    }
+
     public function testMissingEnTranslations()
     {
         $this->xTranslator->setLocale('en');

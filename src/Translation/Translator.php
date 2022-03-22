@@ -87,18 +87,18 @@ class Translator
      * @param string $sFilePath The file full path
      * @param string $sLanguage The language of the strings in this file
      *
-     * @return void
+     * @return bool
      */
-    public function loadTranslations(string $sFilePath, string $sLanguage)
+    public function loadTranslations(string $sFilePath, string $sLanguage): bool
     {
         if(!file_exists($sFilePath))
         {
-            return;
+            return false;
         }
         $aTranslations = require($sFilePath);
         if(!is_array($aTranslations))
         {
-            return;
+            return false;
         }
         // Load the translations
         if(!isset($this->aTranslations[$sLanguage]))
@@ -106,6 +106,7 @@ class Translator
             $this->aTranslations[$sLanguage] = [];
         }
         $this->_loadTranslations($sLanguage, '', $aTranslations);
+        return true;
     }
 
     /**
