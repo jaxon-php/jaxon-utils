@@ -48,7 +48,7 @@ class UriDetector
             $this->aUrl['scheme'] = $server['HTTP_SCHEME'];
             return;
         }
-        $this->aUrl['scheme'] = (isset($server['HTTPS']) && strtolower($server['HTTPS']) != 'off') ? 'https' : 'http';
+        $this->aUrl['scheme'] = (isset($server['HTTPS']) && strtolower($server['HTTPS']) !== 'off') ? 'https' : 'http';
     }
 
     /**
@@ -109,11 +109,19 @@ class UriDetector
         {
             return;
         }
-        $aPath = parse_url($server['PATH_INFO'] ?? $server['PHP_SELF']);
+        $aPath = parse_url($server['PATH_INFO'] ?? ($server['PHP_SELF'] ?? ''));
         if(isset($aPath['path']))
         {
-            $this->aUrl['path'] = str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $aPath['path']);
+            $this->aUrl['path'] = $aPath['path'];
         }
+    }
+
+    /**
+     * @return string
+     */
+    private function getPath(): string
+    {
+        return '/' . ltrim($this->aUrl['path'], '/');
     }
 
     /**
@@ -156,7 +164,7 @@ class UriDetector
     {
         if(empty($this->aUrl['query']))
         {
-            $this->aUrl['query'] = empty($server['QUERY_STRING']) ? '' : $server['QUERY_STRING'];
+            $this->aUrl['query'] = $server['QUERY_STRING'] ?? '';
         }
     }
 
@@ -194,8 +202,7 @@ class UriDetector
         // Try to get the request URL
         if(isset($server['REQUEST_URI']))
         {
-            $sUri = str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $server['REQUEST_URI']);
-            $this->aUrl = parse_url($sUri);
+            $this->aUrl = parse_url($server['REQUEST_URI']);
         }
 
         // Fill in the empty values
@@ -205,7 +212,9 @@ class UriDetector
         $this->setQuery($server);
 
         // Build the URL: Start with scheme, user and pass
-        return $this->aUrl['scheme'] . '://' . $this->getUser() . $this->aUrl['host'] .
-            $this->getPort() . $this->aUrl['path'] . $this->getQuery();
+        return $this->aUrl['scheme'] . '://' . $this->getUser() .
+            $this->aUrl['host'] . $this->getPort() .
+            str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'],
+                $this->getPath() . $this->getQuery());
     }
 }

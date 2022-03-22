@@ -16,7 +16,6 @@ final class MinifierTest extends TestCase
     public function testFileError()
     {
         $sSrcFile = __DIR__ . '/minifier/nosrc.js';
-        $sSrcMinFile = __DIR__ . '/minifier/src.min.js';
         $sDstMinFile = __DIR__ . '/minifier/dst.min.js';
         $xMinifier = new FileMinifier();
         $bResult = $xMinifier->minify($sSrcFile, $sDstMinFile);
