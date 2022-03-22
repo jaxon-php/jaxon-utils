@@ -30,7 +30,7 @@ before_install:
     - if [ -n "$GH_TOKEN" ]; then composer config github-oauth.github.com ${GH_TOKEN}; fi;
     - composer self-update
     - pecl channel-update pecl.php.net
-    - sudo pecl -y install yaml
+    - printf "\n" | pecl install yaml # respond with Enter when the script asks for user input.
     - sudo echo "extension=yaml.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 install:
