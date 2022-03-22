@@ -108,10 +108,10 @@ class Config
      * @param array $aOptions The options array
      * @param string $sKeys The key prefix of the config options
      *
-     * @return Config
+     * @return bool
      * @throws DataDepth
      */
-    public function setOptions(array $aOptions, string $sKeys = ''): Config
+    public function setOptions(array $aOptions, string $sKeys = ''): bool
     {
         // Find the config array in the input data
         $aKeys = explode('.', $sKeys);
@@ -121,14 +121,14 @@ class Config
             {
                 if(!isset($aOptions[$sKey]) || !is_array($aOptions[$sKey]))
                 {
-                    return $this;
+                    return false;
                 }
                 $aOptions = $aOptions[$sKey];
             }
         }
         $this->_setOptions($aOptions);
 
-        return $this;
+        return true;
     }
 
     /**

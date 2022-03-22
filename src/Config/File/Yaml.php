@@ -38,11 +38,11 @@ class Yaml
      */
     public static function read(string $sConfigFile): array
     {
-        $sConfigFile = realpath($sConfigFile);
         if(!extension_loaded('yaml'))
         {
             throw new YamlExtension();
         }
+        $sConfigFile = realpath($sConfigFile);
         if(!is_readable($sConfigFile))
         {
             throw new FileAccess($sConfigFile);
