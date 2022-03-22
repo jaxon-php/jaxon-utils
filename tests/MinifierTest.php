@@ -8,9 +8,6 @@ use PHPUnit\Framework\TestCase;
 use function file_exists;
 use function filesize;
 
-/**
- * @covers FileMinifier
- */
 final class MinifierTest extends TestCase
 {
     public function testFileError()

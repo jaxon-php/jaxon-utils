@@ -5,9 +5,6 @@ namespace Jaxon\Utils\Tests;
 use PHPUnit\Framework\TestCase;
 use Jaxon\Utils\Http\UriDetector;
 
-/**
- * @covers UriDetector
- */
 final class UriDetectorTest extends TestCase
 {
     /**

@@ -5,9 +5,6 @@ namespace Jaxon\Utils\Tests;
 use Jaxon\Utils\Translation\Translator;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Translator
- */
 final class TranslatorTest extends TestCase
 {
     /**
