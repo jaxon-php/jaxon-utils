@@ -10,14 +10,22 @@ use function filesize;
 
 final class MinifierTest extends TestCase
 {
-    public function testFileError()
+    public function testFileNotFound()
     {
         $sSrcFile = __DIR__ . '/minifier/nosrc.js';
         $sDstMinFile = __DIR__ . '/minifier/dst.min.js';
         $xMinifier = new FileMinifier();
-        $bResult = $xMinifier->minify($sSrcFile, $sDstMinFile);
 
-        $this->assertFalse($bResult);
+        $this->assertFalse($xMinifier->minify($sSrcFile, $sDstMinFile));
+    }
+
+    public function testFileError()
+    {
+        $sSrcFile = __DIR__ . '/minifier/error.js';
+        $sDstMinFile = __DIR__ . '/minifier/dst.min.js';
+        $xMinifier = new FileMinifier();
+
+        $this->assertFalse($xMinifier->minify($sSrcFile, $sDstMinFile));
     }
 
     public function testMinifier()
@@ -26,9 +34,8 @@ final class MinifierTest extends TestCase
         $sSrcMinFile = __DIR__ . '/minifier/src.min.js';
         $sDstMinFile = __DIR__ . '/minifier/dst.min.js';
         $xMinifier = new FileMinifier();
-        $bResult = $xMinifier->minify($sSrcFile, $sDstMinFile);
 
-        $this->assertTrue($bResult);
+        $this->assertTrue($xMinifier->minify($sSrcFile, $sDstMinFile));
         $this->assertTrue(file_exists($sDstMinFile));
         $this->assertEquals(filesize($sSrcMinFile), filesize($sDstMinFile));
     }
