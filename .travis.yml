@@ -29,9 +29,9 @@ addons:
 before_install:
     - if [ -n "$GH_TOKEN" ]; then composer config github-oauth.github.com ${GH_TOKEN}; fi;
     - composer self-update
-    - pecl channel-update pecl.php.net
-    - pecl -y install yaml
-    - echo "extension=yaml.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+    - sudo pecl channel-update pecl.php.net
+    - sudo pecl -y install yaml
+    - sudo echo "extension=yaml.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 install:
     - composer install --no-interaction --prefer-dist -o
