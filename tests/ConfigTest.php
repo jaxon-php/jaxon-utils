@@ -64,6 +64,15 @@ final class ConfigTest extends TestCase
         $this->assertCount(3, $aOptionNames);
     }
 
+    public function testSimpleArrayValues()
+    {
+        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/array.php');
+        $aOption = $this->xConfig->getOption('core.array');
+        $this->assertIsArray($aOption);
+        $this->assertCount(4, $aOption);
+        $this->assertEmpty($this->xConfig->getOptionNames('jaxon.array'));
+    }
+
     public function testSetOptionsError()
     {
         // The key is missing
