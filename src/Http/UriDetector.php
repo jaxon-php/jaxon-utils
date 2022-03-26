@@ -27,7 +27,7 @@ class UriDetector
 {
     /**
      * The URL components
-     * 
+     *
      * @var array
      */
     protected $aUrl;
@@ -48,7 +48,14 @@ class UriDetector
             $this->aUrl['scheme'] = $server['HTTP_SCHEME'];
             return;
         }
-        $this->aUrl['scheme'] = (isset($server['HTTPS']) && strtolower($server['HTTPS']) !== 'off') ? 'https' : 'http';
+        if((isset($server['HTTPS']) && strtolower($server['HTTPS']) === 'on') ||
+            (isset($server['HTTP_X_FORWARDED_SSL']) && $server['HTTP_X_FORWARDED_SSL'] === 'on') ||
+            (isset($server['HTTP_X_FORWARDED_PROTO']) && $server['HTTP_X_FORWARDED_PROTO'] === 'https'))
+        {
+            $this->aUrl['scheme'] = 'https';
+            return;
+        }
+        $this->aUrl['scheme'] = 'http';
     }
 
     /**
@@ -194,7 +201,7 @@ class UriDetector
 
     /**
      * Detect the UriDetector of the current request
-     * 
+     *
      * @param array $server The server data in the HTTP request
      *
      * @return string

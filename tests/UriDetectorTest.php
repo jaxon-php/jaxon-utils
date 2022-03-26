@@ -2,9 +2,9 @@
 
 namespace Jaxon\Utils\Tests;
 
+use Jaxon\Utils\Http\UriDetector;
 use Jaxon\Utils\Http\UriException;
 use PHPUnit\Framework\TestCase;
-use Jaxon\Utils\Http\UriDetector;
 
 final class UriDetectorTest extends TestCase
 {
@@ -55,6 +55,9 @@ final class UriDetectorTest extends TestCase
         ]));
     }
 
+    /**
+     * @throws UriException
+     */
     public function testUriWithParts()
     {
         $this->assertEquals('http://example.test/path?param1=value1&param2=%22value2%22',
@@ -73,21 +76,33 @@ final class UriDetectorTest extends TestCase
                 'QUERY_STRING' => 'param1=value1&param2="value2"',
             ])
         );
-        $this->assertEquals('https://example.test:8080/path?param1=value1&param2=%22value2%22',
+        $this->assertEquals('https://example.test:8080/path',
             $this->xUriDetector->detect([
                 'HTTPS' => 'on',
                 'SERVER_NAME' => 'example.test:8080',
                 'PATH_INFO' => '/path',
-                'QUERY_STRING' => 'param1=value1&param2="value2"',
             ])
         );
-        $this->assertEquals('https://example.test:8080/path?param1=value1&param2=%22value2%22',
+        $this->assertEquals('https://example.test:8080/path',
             $this->xUriDetector->detect([
                 'HTTPS' => 'on',
                 'SERVER_NAME' => 'example.test',
                 'SERVER_PORT' => '8080',
                 'PATH_INFO' => '/path',
-                'QUERY_STRING' => 'param1=value1&param2="value2"',
+            ])
+        );
+        $this->assertEquals('https://example.test:8080/path',
+            $this->xUriDetector->detect([
+                'HTTP_X_FORWARDED_SSL' => 'on',
+                'SERVER_NAME' => 'example.test:8080',
+                'PATH_INFO' => '/path',
+            ])
+        );
+        $this->assertEquals('https://example.test:8080/path',
+            $this->xUriDetector->detect([
+                'HTTP_X_FORWARDED_PROTO' => 'https',
+                'SERVER_NAME' => 'example.test:8080',
+                'PATH_INFO' => '/path',
             ])
         );
     }
