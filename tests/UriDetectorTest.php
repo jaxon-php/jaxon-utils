@@ -18,6 +18,9 @@ final class UriDetectorTest extends TestCase
         $this->xUriDetector = new UriDetector();
     }
 
+    /**
+     * @throws UriException
+     */
     public function testUri()
     {
         $this->assertEquals('http://example.test/path', $this->xUriDetector->detect([
@@ -25,6 +28,9 @@ final class UriDetectorTest extends TestCase
         ]));
     }
 
+    /**
+     * @throws UriException
+     */
     public function testUriWithParam()
     {
         $this->assertEquals('http://example.test/path?param1=value1&param2=%22value2%22',
@@ -34,6 +40,9 @@ final class UriDetectorTest extends TestCase
         );
     }
 
+    /**
+     * @throws UriException
+     */
     public function testUriWithUser()
     {
         $this->assertEquals('http://user@example.test/path', $this->xUriDetector->detect([
@@ -41,6 +50,9 @@ final class UriDetectorTest extends TestCase
         ]));
     }
 
+    /**
+     * @throws UriException
+     */
     public function testUriWithUserAndPass()
     {
         $this->assertEquals('http://user:pass@example.test/path', $this->xUriDetector->detect([
@@ -48,6 +60,9 @@ final class UriDetectorTest extends TestCase
         ]));
     }
 
+    /**
+     * @throws UriException
+     */
     public function testUriWithEmptyBasename()
     {
         $this->assertEquals('http://example.test/', $this->xUriDetector->detect([
@@ -107,6 +122,9 @@ final class UriDetectorTest extends TestCase
         );
     }
 
+    /**
+     * @throws UriException
+     */
     public function testRemoveJaxonParam()
     {
         $this->assertEquals('http://example.test/path', $this->xUriDetector->detect([
@@ -127,5 +145,47 @@ final class UriDetectorTest extends TestCase
             'PATH_INFO' => '/path',
             'QUERY_STRING' => 'param1=value1&param2="value2"',
         ]);
+    }
+
+    public function testRedirectSimpleUrl()
+    {
+        $this->assertEquals('http://example.test/path',
+            $this->xUriDetector->redirect('http://example.test/path', []));
+    }
+
+    public function testRedirectUrlWithAnchor()
+    {
+        $this->assertEquals('http://example.test/path?param=value#anchor',
+            $this->xUriDetector->redirect('http://example.test/path?param=value#anchor', []));
+    }
+
+    public function testRedirectUrlWithParam()
+    {
+        $this->assertEquals('http://example.test/path?param=value',
+            $this->xUriDetector->redirect('http://example.test/path?param=value', []));
+    }
+
+    public function testRedirectUrlWithParams()
+    {
+        $this->assertEquals('http://example.test/path?param1=value1&param2=value2',
+            $this->xUriDetector->redirect('http://example.test/path?param1=value1&param2=value2', []));
+    }
+
+    public function testRedirectUrlWithSpecialChars()
+    {
+        $this->assertEquals('http://example.test/path?param1=%22value1%22&param2=%25value2%25#anchor',
+            $this->xUriDetector->redirect('http://example.test/path?param1="value1"&param2=%value2%#anchor', []));
+    }
+
+    public function testRedirectSpecialUrl()
+    {
+        $this->assertEquals('http://example.test/?query1234',
+            $this->xUriDetector->redirect('http://example.test/?query1234', []));
+    }
+
+    public function testRedirectEncodedUrl()
+    {
+        $this->assertEquals('http://example.test/path?param1=%22value1%22&param2=%25value2%25',
+            $this->xUriDetector->redirect('http://example.test/path?param1=%22value1%22&param2=%25value2%25', []));
     }
 }

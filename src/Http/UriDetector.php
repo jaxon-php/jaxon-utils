@@ -14,14 +14,18 @@
 
 namespace Jaxon\Utils\Http;
 
-use function strpos;
+use function basename;
 use function explode;
 use function implode;
-use function strtolower;
-use function strlen;
-use function basename;
+use function parse_str;
 use function parse_url;
+use function rawurlencode;
 use function str_replace;
+use function strlen;
+use function strpos;
+use function strrpos;
+use function strtolower;
+use function substr;
 
 class UriDetector
 {
@@ -228,14 +232,58 @@ class UriDetector
     }
 
     /**
-     * Detect the URI of the current request
+     * @param string $sQueryPart
+     * @param array $aServerParams
      *
-     * @param string $sUrl
+     * @return string
+     */
+    private function parseQueryPart(string $sQueryPart, array $aServerParams): string
+    {
+        $aQueryParts = [];
+        parse_str($sQueryPart, $aQueryParts);
+        if(($aQueryParts))
+        {
+            $aNewQueryParts = [];
+            foreach($aQueryParts as $sKey => $sValue)
+            {
+                $sValue = rawurlencode($sValue);
+                $aNewQueryParts[] = rawurlencode($sKey) . ($sValue ? '=' . $sValue : $sValue);
+            }
+            return implode('&', $aNewQueryParts);
+        }
+        // Couldn't break up the query, but there's one there. Possibly "http://url/page.html?query1234" type of query?
+        // Just encode it and hope it works
+        if($aServerParams['QUERY_STRING'])
+        {
+            return rawurlencode($aServerParams['QUERY_STRING']);
+        }
+        return $sQueryPart;
+    }
+
+    /**
+     * Make the specified URL suitable for redirect
+     *
+     * @param string $sURL The relative or fully qualified URL
      * @param array $aServerParams The server environment variables
      *
      * @return string
      */
-    public function redirect(string $sUrl, array $aServerParams): string
+    public function redirect(string $sURL, array $aServerParams): string
     {
+        // We need to parse the query part so that the values are rawurlencode()'ed.
+        // Can't just use parse_url() cos we could be dealing with a relative URL which parse_url() can't deal with.
+        $nQueryStart = strpos($sURL, '?', strrpos($sURL, '/'));
+        if($nQueryStart === false)
+        {
+            return $sURL;
+        }
+        $nQueryStart++;
+        $nQueryEnd = strpos($sURL, '#', $nQueryStart);
+        if($nQueryEnd === false)
+        {
+            $nQueryEnd = strlen($sURL);
+        }
+        $sQueryPart = substr($sURL, $nQueryStart, $nQueryEnd - $nQueryStart);
+        return str_replace($sQueryPart, $this->parseQueryPart($sQueryPart, $aServerParams), $sURL);
     }
 }
