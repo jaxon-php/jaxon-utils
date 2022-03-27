@@ -33,24 +33,24 @@ class UriDetector
     protected $aUrl;
 
     /**
-     * @param array $server The HTTP request server data
+     * @param array $aServerParams The server environment variables
      *
      * @return void
      */
-    private function setScheme(array $server)
+    private function setScheme(array $aServerParams)
     {
         if(isset($this->aUrl['scheme']))
         {
             return;
         }
-        if(isset($server['HTTP_SCHEME']))
+        if(isset($aServerParams['HTTP_SCHEME']))
         {
-            $this->aUrl['scheme'] = $server['HTTP_SCHEME'];
+            $this->aUrl['scheme'] = $aServerParams['HTTP_SCHEME'];
             return;
         }
-        if((isset($server['HTTPS']) && strtolower($server['HTTPS']) === 'on') ||
-            (isset($server['HTTP_X_FORWARDED_SSL']) && $server['HTTP_X_FORWARDED_SSL'] === 'on') ||
-            (isset($server['HTTP_X_FORWARDED_PROTO']) && $server['HTTP_X_FORWARDED_PROTO'] === 'https'))
+        if((isset($aServerParams['HTTPS']) && strtolower($aServerParams['HTTPS']) === 'on') ||
+            (isset($aServerParams['HTTP_X_FORWARDED_SSL']) && $aServerParams['HTTP_X_FORWARDED_SSL'] === 'on') ||
+            (isset($aServerParams['HTTP_X_FORWARDED_PROTO']) && $aServerParams['HTTP_X_FORWARDED_PROTO'] === 'https'))
         {
             $this->aUrl['scheme'] = 'https';
             return;
@@ -59,54 +59,54 @@ class UriDetector
     }
 
     /**
-     * Get the URL from the $server var
+     * Get the URL from the $aServerParams var
      *
-     * @param array $server The HTTP request server data
-     * @param string $sKey The key in the $server array
+     * @param array $aServerParams The server environment variables
+     * @param string $sKey The key in the $aServerParams array
      *
      * @return void
      */
-    private function setHostFromServer(array $server, string $sKey)
+    private function setHostFromServer(array $aServerParams, string $sKey)
     {
-        if(isset($this->aUrl['host']) || empty($server[$sKey]))
+        if(isset($this->aUrl['host']) || empty($aServerParams[$sKey]))
         {
             return;
         }
-        if(strpos($server[$sKey], ':') === false)
+        if(strpos($aServerParams[$sKey], ':') === false)
         {
-            $this->aUrl['host'] = $server[$sKey];
+            $this->aUrl['host'] = $aServerParams[$sKey];
             return;
         }
-        list($this->aUrl['host'], $this->aUrl['port']) = explode(':', $server[$sKey]);
+        list($this->aUrl['host'], $this->aUrl['port']) = explode(':', $aServerParams[$sKey]);
     }
 
     /**
-     * @param array $server The HTTP request server data
+     * @param array $aServerParams The server environment variables
      *
      * @return void
      * @throws UriException
      */
-    private function setHost(array $server)
+    private function setHost(array $aServerParams)
     {
-        $this->setHostFromServer($server, 'HTTP_X_FORWARDED_HOST');
-        $this->setHostFromServer($server, 'HTTP_HOST');
-        $this->setHostFromServer($server, 'SERVER_NAME');
+        $this->setHostFromServer($aServerParams, 'HTTP_X_FORWARDED_HOST');
+        $this->setHostFromServer($aServerParams, 'HTTP_HOST');
+        $this->setHostFromServer($aServerParams, 'SERVER_NAME');
         if(empty($this->aUrl['host']))
         {
             throw new UriException();
         }
-        if(empty($this->aUrl['port']) && isset($server['SERVER_PORT']))
+        if(empty($this->aUrl['port']) && isset($aServerParams['SERVER_PORT']))
         {
-            $this->aUrl['port'] = $server['SERVER_PORT'];
+            $this->aUrl['port'] = $aServerParams['SERVER_PORT'];
         }
     }
 
     /**
-     * @param array $server The HTTP request server data
+     * @param array $aServerParams The server environment variables
      *
      * @return void
      */
-    private function setPath(array $server)
+    private function setPath(array $aServerParams)
     {
         if(isset($this->aUrl['path']) && strlen(basename($this->aUrl['path'])) === 0)
         {
@@ -116,7 +116,7 @@ class UriDetector
         {
             return;
         }
-        $aPath = parse_url($server['PATH_INFO'] ?? ($server['PHP_SELF'] ?? ''));
+        $aPath = parse_url($aServerParams['PATH_INFO'] ?? ($aServerParams['PHP_SELF'] ?? ''));
         if(isset($aPath['path']))
         {
             $this->aUrl['path'] = $aPath['path'];
@@ -163,15 +163,15 @@ class UriDetector
     }
 
     /**
-     * @param array $server The HTTP request server data
+     * @param array $aServerParams The server environment variables
      *
      * @return void
      */
-    private function setQuery(array $server)
+    private function setQuery(array $aServerParams)
     {
         if(empty($this->aUrl['query']))
         {
-            $this->aUrl['query'] = $server['QUERY_STRING'] ?? '';
+            $this->aUrl['query'] = $aServerParams['QUERY_STRING'] ?? '';
         }
     }
 
@@ -200,32 +200,42 @@ class UriDetector
     }
 
     /**
-     * Detect the UriDetector of the current request
+     * Detect the URI of the current request
      *
-     * @param array $server The server data in the HTTP request
+     * @param array $aServerParams The server environment variables
      *
      * @return string
      * @throws UriException
      */
-    public function detect(array $server): string
+    public function detect(array $aServerParams): string
     {
         $this->aUrl = [];
         // Try to get the request URL
-        if(isset($server['REQUEST_URI']))
+        if(isset($aServerParams['REQUEST_URI']))
         {
-            $this->aUrl = parse_url($server['REQUEST_URI']);
+            $this->aUrl = parse_url($aServerParams['REQUEST_URI']);
         }
 
         // Fill in the empty values
-        $this->setScheme($server);
-        $this->setHost($server);
-        $this->setPath($server);
-        $this->setQuery($server);
+        $this->setScheme($aServerParams);
+        $this->setHost($aServerParams);
+        $this->setPath($aServerParams);
+        $this->setQuery($aServerParams);
 
         // Build the URL: Start with scheme, user and pass
-        return $this->aUrl['scheme'] . '://' . $this->getUser() .
-            $this->aUrl['host'] . $this->getPort() .
-            str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'],
-                $this->getPath() . $this->getQuery());
+        return $this->aUrl['scheme'] . '://' . $this->getUser() . $this->aUrl['host'] . $this->getPort() .
+            str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $this->getPath() . $this->getQuery());
+    }
+
+    /**
+     * Detect the URI of the current request
+     *
+     * @param string $sUrl
+     * @param array $aServerParams The server environment variables
+     *
+     * @return string
+     */
+    public function redirect(string $sUrl, array $aServerParams): string
+    {
     }
 }
