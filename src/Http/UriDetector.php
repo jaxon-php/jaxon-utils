@@ -241,6 +241,13 @@ class UriDetector
     {
         $aQueryParts = [];
         parse_str($sQueryPart, $aQueryParts);
+        if(empty($aQueryParts))
+        {
+            // Couldn't break up the query, but there's one there.
+            // Possibly "http://url/page.html?query1234" type of query?
+            // Try to get data from the server environment var.
+            parse_str($aServerParams['QUERY_STRING'] ?? '', $aQueryParts);
+        }
         if(($aQueryParts))
         {
             $aNewQueryParts = [];
@@ -249,15 +256,9 @@ class UriDetector
                 $sValue = rawurlencode($sValue);
                 $aNewQueryParts[] = rawurlencode($sKey) . ($sValue ? '=' . $sValue : $sValue);
             }
-            return implode('&', $aNewQueryParts);
+            return '?' . implode('&', $aNewQueryParts);
         }
-        // Couldn't break up the query, but there's one there. Possibly "http://url/page.html?query1234" type of query?
-        // Just encode it and hope it works
-        if($aServerParams['QUERY_STRING'])
-        {
-            return rawurlencode($aServerParams['QUERY_STRING']);
-        }
-        return $sQueryPart;
+        return trim($sQueryPart);
     }
 
     /**
@@ -272,6 +273,7 @@ class UriDetector
     {
         // We need to parse the query part so that the values are rawurlencode()'ed.
         // Can't just use parse_url() cos we could be dealing with a relative URL which parse_url() can't deal with.
+        $sURL = trim($sURL);
         $nQueryStart = strpos($sURL, '?', strrpos($sURL, '/'));
         if($nQueryStart === false)
         {
@@ -284,6 +286,6 @@ class UriDetector
             $nQueryEnd = strlen($sURL);
         }
         $sQueryPart = substr($sURL, $nQueryStart, $nQueryEnd - $nQueryStart);
-        return str_replace($sQueryPart, $this->parseQueryPart($sQueryPart, $aServerParams), $sURL);
+        return str_replace('?' . $sQueryPart, $this->parseQueryPart($sQueryPart, $aServerParams), $sURL);
     }
 }
