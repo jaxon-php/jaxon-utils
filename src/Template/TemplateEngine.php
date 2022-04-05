@@ -27,9 +27,26 @@ class TemplateEngine
     /**
      * The namespaces
      *
-     * @var array   $aNamespaces
+     * @var array
      */
     protected $aNamespaces;
+
+    /**
+     * The default namespace
+     *
+     * @var string
+     */
+    protected $sDefaultNamespace = '';
+
+    /**
+     * Set the default namespace
+     *
+     * @param string $sDefaultNamespace
+     */
+    public function setDefaultNamespace(string $sDefaultNamespace): void
+    {
+        $this->sDefaultNamespace = $sDefaultNamespace;
+    }
 
     /**
      * Add a namespace to the template system
@@ -87,7 +104,7 @@ class TemplateEngine
     {
         $sTemplate = trim($sTemplate);
         // Get the namespace name
-        $sNamespace = '';
+        $sNamespace = $this->sDefaultNamespace;
         $nSeparatorPosition = strrpos($sTemplate, '::');
         if($nSeparatorPosition !== false)
         {
