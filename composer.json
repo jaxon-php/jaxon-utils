@@ -31,5 +31,12 @@
         "psr-4": {
             "Jaxon\\Utils\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": [
+            "@clearCache",
+            "vendor/bin/phpunit"
+        ],
+        "clearCache": "rm -rf cache/*"
     }
 }
