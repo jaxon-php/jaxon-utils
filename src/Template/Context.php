@@ -50,7 +50,7 @@ class Context
      *
      * @return mixed
      */
-    public function __get(string $sName): mixed
+    public function __get(string $sName)
     {
         return $this->__properties__[$sName];
     }
@@ -61,7 +61,7 @@ class Context
      *
      * @return void
      */
-    public function __set(string $sName, mixed $xValue): void
+    public function __set(string $sName, $xValue)
     {
         $this->__properties__[$sName] = $xValue;
     }
