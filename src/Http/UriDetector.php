@@ -254,7 +254,7 @@ class UriDetector
             foreach($aQueryParts as $sKey => $sValue)
             {
                 $sValue = rawurlencode($sValue);
-                $aNewQueryParts[] = rawurlencode($sKey) . ($sValue ? '=' . $sValue : $sValue);
+                $aNewQueryParts[] = rawurlencode($sKey) . (null === $sValue ? '=' . $sValue : $sValue);
             }
             return '?' . implode('&', $aNewQueryParts);
         }
