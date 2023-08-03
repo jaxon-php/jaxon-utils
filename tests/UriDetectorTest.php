@@ -171,6 +171,12 @@ final class UriDetectorTest extends TestCase
             $this->xUriDetector->redirect('http://example.test/path?param1=value1&param2=value2', []));
     }
 
+    public function testRedirectWithValueZero()
+    {
+        $this->assertEquals('http://example.test/path?param1=0',
+            $this->xUriDetector->redirect('http://example.test/path?param1=0', []));
+    }
+
     public function testRedirectUrlWithSpecialChars()
     {
         $this->assertEquals('http://example.test/path?param1=%22value1%22&param2=%25value2%25#anchor',
