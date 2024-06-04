@@ -19,6 +19,7 @@ use function rtrim;
 use function substr;
 use function strrpos;
 use function ob_start;
+use function is_readable;
 use function ob_get_clean;
 use function call_user_func;
 
@@ -75,7 +76,7 @@ class TemplateEngine
      */
     private function renderTemplate(string $sPath, array $aVars): string
     {
-        if(!is_readable($sPath))
+        if(!@is_readable($sPath))
         {
             return '';
         }
