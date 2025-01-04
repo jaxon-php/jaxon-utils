@@ -14,13 +14,15 @@
 
 namespace Jaxon\Utils\Translation;
 
-use function trim;
+use function array_keys;
+use function array_map;
+use function array_merge;
+use function array_values;
+use function explode;
 use function file_exists;
 use function is_array;
 use function str_replace;
-use function array_map;
-use function array_keys;
-use function array_values;
+use function trim;
 
 class Translator
 {
@@ -32,11 +34,18 @@ class Translator
     protected $sDefaultLocale = 'en';
 
     /**
-     * The translations
+     * The translations in a flattened array
      *
      * @var array
      */
     protected $aTranslations = [];
+
+    /**
+     * The translations as received as input
+     *
+     * @var array
+     */
+    protected $aRawTranslations = [];
 
     /**
      * Set the default locale
@@ -100,11 +109,14 @@ class Translator
         {
             return false;
         }
+
         // Load the translations
         if(!isset($this->aTranslations[$sLanguage]))
         {
             $this->aTranslations[$sLanguage] = [];
         }
+        $this->aRawTranslations[$sLanguage] =
+            array_merge($this->aRawTranslations[$sLanguage] ?? [], $aTranslations);
         $this->_loadTranslations($sLanguage, '', $aTranslations);
         return true;
     }
@@ -138,5 +150,32 @@ class Translator
             $sMessage = str_replace($aVars, array_values($aPlaceHolders), $sMessage);
         }
         return $sMessage;
+    }
+
+    /**
+     * Get all the translations under a given key
+     *
+     * @param string $sKey
+     * @param string $sLanguage
+     *
+     * @return array
+     */
+    public function translations(string $sKey, string $sLanguage = ''): array
+    {
+        if(empty($sLanguage))
+        {
+            $sLanguage = $this->sDefaultLocale;
+        }
+        $aKeys = explode('.', $sKey);
+
+        $aTranslations = $this->aRawTranslations[$sLanguage];
+        foreach($aKeys as $sKey)
+        {
+            if($sKey !== '')
+            {
+                $aTranslations = $aTranslations[$sKey] ?? [];
+            }
+        }
+        return $aTranslations;
     }
 }
