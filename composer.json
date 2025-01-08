@@ -13,7 +13,7 @@
         "source": "https://github.com/jaxon-php/jaxon-utils"
     },
     "require": {
-        "php": ">=7.1",
+        "php": ">=8.0",
         "ext-json": "*",
         "tedivm/jshrink": "^1.4"
     },
