@@ -83,16 +83,20 @@ final class ConfigTest extends TestCase
     public function testSetOptionsError()
     {
         // The key is missing
-        $this->assertFalse($this->xConfig->setOptions(['core' => []], 'core.missing'));
-        // The key is not an array
-        $this->assertFalse($this->xConfig->setOptions(['core' => ['string' => 'String']], 'core.string'));
+        $aOptions = ['core' => []];
+        $this->xConfig = $this->xConfigSetter->setOptions($this->xConfig, $aOptions, 'core.missing');
+        $this->assertFalse($this->xConfig->changed());
+        // The value under the key is not an array
+        $aOptions = ['core' => ['string' => 'String']];
+        $this->xConfig = $this->xConfigSetter->setOptions($this->xConfig, $aOptions, 'core.string');
+        $this->assertFalse($this->xConfig->changed());
         $this->assertFalse($this->xConfig->hasOption('core.string'));
     }
 
     public function testSetOptionsDataDepth()
     {
         $this->expectException(DataDepth::class);
-        $this->xConfig->setOptions([
+        $this->xConfigSetter->setOptions($this->xConfig, [
             'core' => [
                 'one' => [
                     'two' => [
