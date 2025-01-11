@@ -16,15 +16,17 @@ namespace Jaxon\Utils\Config;
 
 use Jaxon\Utils\Config\Exception\DataDepth;
 
+use function array_pop;
 use function count;
-use function trim;
-use function rtrim;
 use function explode;
+use function implode;
+use function is_array;
+use function is_int;
+use function rtrim;
 use function strlen;
 use function strpos;
 use function substr;
-use function is_int;
-use function is_array;
+use function trim;
 
 class Config
 {
@@ -52,6 +54,45 @@ class Config
     }
 
     /**
+     * @param string $sLastName
+     * @param array $aNames
+     *
+     * @return int
+     */
+    private function pop(string &$sLastName, array &$aNames): int
+    {
+        $sLastName = array_pop($aNames);
+        return count($aNames);
+    }
+
+    /**
+     * Set the value of a config option
+     *
+     * @param string $sPrefix The prefix for option names
+     * @param string $sName The option name
+     * @param mixed $xValue The option value
+     *
+     * @return void
+     */
+    private function _setOption(string $sPrefix, string $sName, $xValue)
+    {
+        $this->aOptions[$sPrefix . $sName] = $xValue;
+        // Given an option name like a.b.c, the values of a and a.b must also be set.
+        $sLastName = '';
+        $aNames = explode('.', $sName);
+        while($this->pop($sLastName, $aNames) > 0)
+        {
+            $sName = implode('.', $aNames);
+            if(!isset($this->aOptions[$sPrefix . $sName]))
+            {
+                $this->aOptions[$sPrefix . $sName] = [];
+            }
+            $this->aOptions[$sPrefix . $sName][$sLastName] = $xValue;
+            $xValue = $this->aOptions[$sPrefix . $sName];
+        }
+    }
+
+    /**
      * Set the value of a config option
      *
      * @param string $sName The option name
@@ -61,7 +102,7 @@ class Config
      */
     public function setOption(string $sName, $xValue)
     {
-        $this->aOptions[$sName] = $xValue;
+        $this->_setOption('', $sName, $xValue);
     }
 
     /**
@@ -90,14 +131,13 @@ class Config
             }
 
             $sName = trim($sName);
-            $sFullName = ($sPrefix) ? $sPrefix . '.' . $sName : $sName;
             // Save the value of this option
-            $this->aOptions[$sFullName] = $xOption;
+            $this->_setOption($sPrefix, $sName, $xOption);
             // Save the values of its sub-options
             if(is_array($xOption))
             {
-                // Recursively read the options in the array
-                $this->_setOptions($xOption, $sFullName, $nDepth + 1);
+                // Recursively set the options in the array
+                $this->_setOptions($xOption, $sPrefix . $sName . '.', $nDepth + 1);
             }
         }
     }
