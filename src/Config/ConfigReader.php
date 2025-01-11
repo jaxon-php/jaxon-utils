@@ -39,14 +39,14 @@ class ConfigReader
         switch($sExt)
         {
         case 'php':
-            $aConfigOptions = File\Php::read($sConfigFile);
+            $aConfigOptions = Reader\PhpReader::read($sConfigFile);
             break;
         case 'yaml':
         case 'yml':
-            $aConfigOptions = File\Yaml::read($sConfigFile);
+            $aConfigOptions = Reader\YamlReader::read($sConfigFile);
             break;
         case 'json':
-            $aConfigOptions = File\Json::read($sConfigFile);
+            $aConfigOptions = Reader\JsonReader::read($sConfigFile);
             break;
         default:
             throw new Exception\FileExtension($sConfigFile);

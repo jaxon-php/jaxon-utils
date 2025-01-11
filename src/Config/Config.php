@@ -82,13 +82,13 @@ class Config
         $aNames = explode('.', $sName);
         while($this->pop($sLastName, $aNames) > 0)
         {
-            $sName = implode('.', $aNames);
-            if(!isset($this->aOptions[$sPrefix . $sName]))
+            $sName = $sPrefix . implode('.', $aNames);
+            if(!isset($this->aOptions[$sName]))
             {
-                $this->aOptions[$sPrefix . $sName] = [];
+                $this->aOptions[$sName] = [];
             }
-            $this->aOptions[$sPrefix . $sName][$sLastName] = $xValue;
-            $xValue = $this->aOptions[$sPrefix . $sName];
+            $this->aOptions[$sName][$sLastName] = $xValue;
+            $xValue = $this->aOptions[$sName];
         }
     }
 

@@ -12,7 +12,7 @@
  * @link https://github.com/jaxon-php/jaxon-core
  */
 
-namespace Jaxon\Utils\Config\File;
+namespace Jaxon\Utils\Config\Reader;
 
 use Jaxon\Utils\Config\Exception\FileAccess;
 use Jaxon\Utils\Config\Exception\FileContent;
@@ -23,7 +23,7 @@ use function is_readable;
 use function file_get_contents;
 use function json_decode;
 
-class Json
+class JsonReader
 {
     /**
      * Read options from a JSON formatted config file
