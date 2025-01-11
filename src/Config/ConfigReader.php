@@ -18,6 +18,12 @@ use function pathinfo;
 class ConfigReader
 {
     /**
+     * @param ConfigSetter $xConfigSetter
+     */
+    public function __construct(private ConfigSetter $xConfigSetter)
+    {}
+
+    /**
      * Read options from a config file
      *
      * @param string $sConfigFile The full path to the config file
@@ -62,16 +68,17 @@ class ConfigReader
      * @param string $sConfigFile The full path to the config file
      * @param string $sConfigSection The section of the config file to be loaded
      *
-     * @return void
+     * @return Config
      * @throws Exception\DataDepth
      * @throws Exception\FileAccess
      * @throws Exception\FileExtension
      * @throws Exception\FileContent
      * @throws Exception\YamlExtension
      */
-    public function load(Config $xConfig, string $sConfigFile, string $sConfigSection = '')
+    public function load(Config $xConfig, string $sConfigFile, string $sConfigSection = ''): Config
     {
         // Read the options and save in the config.
-        $xConfig->setOptions($this->read($sConfigFile), $sConfigSection);
+        return $this->xConfigSetter
+            ->setOptions($xConfig, $this->read($sConfigFile), $sConfigSection);
     }
 }

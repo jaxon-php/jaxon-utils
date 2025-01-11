@@ -4,6 +4,7 @@ namespace Jaxon\Utils\Tests;
 
 use Jaxon\Utils\Config\Config;
 use Jaxon\Utils\Config\ConfigReader;
+use Jaxon\Utils\Config\ConfigSetter;
 use Jaxon\Utils\Config\Exception\DataDepth;
 use Jaxon\Utils\Config\Exception\FileAccess;
 use Jaxon\Utils\Config\Exception\FileContent;
@@ -18,20 +19,26 @@ final class ConfigTest extends TestCase
     protected $xConfigReader;
 
     /**
+     * @var ConfigSetter
+     */
+    protected $xConfigSetter;
+
+    /**
      * @var Config
      */
     protected $xConfig;
 
     protected function setUp(): void
     {
-        $this->xConfigReader = new ConfigReader();
-        $this->xConfig = new Config(['core' => ['language' => 'en']]);
-        $this->xConfig->setOption('core.prefix.function', 'jaxon_');
+        $this->xConfigSetter = new ConfigSetter();
+        $this->xConfigReader = new ConfigReader($this->xConfigSetter);
+        $this->xConfig = $this->xConfigSetter->newConfig(['core' => ['language' => 'en']]);
+        $this->xConfig = $this->xConfigSetter->setOption($this->xConfig, 'core.prefix.function', 'jaxon_');
     }
 
     public function testPhpConfigReader()
     {
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.php', 'jaxon');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.php', 'jaxon');
         $this->assertEquals('en', $this->xConfig->getOption('core.language'));
         $this->assertEquals('jaxon_', $this->xConfig->getOption('core.prefix.function'));
         $this->assertFalse($this->xConfig->getOption('core.debug.on'));
@@ -40,7 +47,7 @@ final class ConfigTest extends TestCase
 
     public function testYamlConfigReader()
     {
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.yaml', 'jaxon');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.yaml', 'jaxon');
         $this->assertEquals('en', $this->xConfig->getOption('core.language'));
         $this->assertEquals('jaxon_', $this->xConfig->getOption('core.prefix.function'));
         $this->assertFalse($this->xConfig->getOption('core.debug.on'));
@@ -49,7 +56,7 @@ final class ConfigTest extends TestCase
 
     public function testJsonConfigReader()
     {
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.json', 'jaxon');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.json', 'jaxon');
         $this->assertEquals('en', $this->xConfig->getOption('core.language'));
         $this->assertEquals('jaxon_', $this->xConfig->getOption('core.prefix.function'));
         $this->assertFalse($this->xConfig->getOption('core.debug.on'));
@@ -58,7 +65,7 @@ final class ConfigTest extends TestCase
 
     public function testReadOptionNames()
     {
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.json');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.json');
         $aOptionNames = $this->xConfig->getOptionNames('jaxon.core');
         $this->assertIsArray($aOptionNames);
         $this->assertCount(3, $aOptionNames);
@@ -66,7 +73,7 @@ final class ConfigTest extends TestCase
 
     public function testSimpleArrayValues()
     {
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/array.php');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/array.php');
         $aOption = $this->xConfig->getOption('core.array');
         $this->assertIsArray($aOption);
         $this->assertCount(4, $aOption);
@@ -120,42 +127,42 @@ final class ConfigTest extends TestCase
     public function testMissingPhpFile()
     {
         $this->expectException(FileAccess::class);
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/missing.php');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/missing.php');
     }
 
     public function testMissingJsonFile()
     {
         $this->expectException(FileAccess::class);
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/missing.json');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/missing.json');
     }
 
     public function testMissingYamlFile()
     {
         $this->expectException(FileAccess::class);
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/missing.yml');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/missing.yml');
     }
 
     public function testErrorInPhpFile()
     {
         $this->expectException(FileContent::class);
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/error.php');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/error.php');
     }
 
     public function testErrorInJsonFile()
     {
         $this->expectException(FileContent::class);
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/error.json');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/error.json');
     }
 
     public function testErrorInYamlFile()
     {
         $this->expectException(FileContent::class);
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/error.yml');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/error.yml');
     }
 
     public function testUnsupportedFileExtension()
     {
         $this->expectException(FileExtension::class);
-        $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.ini');
+        $this->xConfig = $this->xConfigReader->load($this->xConfig, __DIR__ . '/config/config.ini');
     }
 }

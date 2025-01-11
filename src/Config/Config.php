@@ -23,11 +23,33 @@ use function trim;
 class Config
 {
     /**
-     * The config options
+     * The constructor
      *
-     * @var array
+     * @param array $aValues
+     * @param bool $bChanged
      */
-    public $aValues = [];
+    public function __construct(private array $aValues = [], private bool $bChanged = true)
+    {}
+
+    /**
+     * Get the config values
+     *
+     * @return array
+     */
+    public function getValues(): array
+    {
+        return $this->aValues;
+    }
+
+    /**
+     * If the values has changed
+     *
+     * @return bool
+     */
+    public function changed(): bool
+    {
+        return $this->bChanged;
+    }
 
     /**
      * Get the value of a config option

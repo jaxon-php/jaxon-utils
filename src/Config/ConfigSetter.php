@@ -35,12 +35,8 @@ class ConfigSetter
      */
     public function newConfig(array $aOptions = [], string $sKeys = ''): Config
     {
-        $xConfig = new Config();
-        if(count($aOptions) > 0)
-        {
-            $this->setOptions($xConfig, $aOptions, $sKeys);
-        }
-        return $xConfig;
+        return count($aOptions) === 0 ? new Config() :
+            $this->setOptions(new Config(), $aOptions, $sKeys);
     }
 
     /**
@@ -58,29 +54,30 @@ class ConfigSetter
     /**
      * Set the value of a config option
      *
-     * @param Config $xConfig
+     * @param array $aValues
      * @param string $sPrefix The prefix for option names
      * @param string $sName The option name
      * @param mixed $xValue The option value
      *
-     * @return void
+     * @return array
      */
-    private function _setOption(Config $xConfig, string $sPrefix, string $sName, $xValue)
+    private function setValue(array $aValues, string $sPrefix, string $sName, $xValue): array
     {
-        $xConfig->aValues[$sPrefix . $sName] = $xValue;
+        $aValues[$sPrefix . $sName] = $xValue;
         // Given an option name like a.b.c, the values of a and a.b must also be set.
         $sLastName = '';
         $aNames = explode('.', $sName);
         while($this->pop($sLastName, $aNames) > 0)
         {
             $sName = $sPrefix . implode('.', $aNames);
-            if(!isset($xConfig->aValues[$sName]))
+            if(!isset($aValues[$sName]))
             {
-                $xConfig->aValues[$sName] = [];
+                $aValues[$sName] = [];
             }
-            $xConfig->aValues[$sName][$sLastName] = $xValue;
-            $xValue = $xConfig->aValues[$sName];
+            $aValues[$sName][$sLastName] = $xValue;
+            $xValue = $aValues[$sName];
         }
+        return $aValues;
     }
 
     /**
@@ -90,25 +87,25 @@ class ConfigSetter
      * @param string $sName The option name
      * @param mixed $xValue The option value
      *
-     * @return void
+     * @return Config
      */
-    public function setOption(Config $xConfig, string $sName, $xValue)
+    public function setOption(Config $xConfig, string $sName, $xValue): Config
     {
-        $this->_setOption($xConfig, '', $sName, $xValue);
+        return new Config($this->setValue($xConfig->getValues(), '', $sName, $xValue));
     }
 
     /**
      * Recursively set Jaxon options from a data array
      *
-     * @param Config $xConfig
+     * @param array $aValues
      * @param array $aOptions The options array
      * @param string $sPrefix The prefix for option names
      * @param int $nDepth The depth from the first call
      *
-     * @return void
+     * @return array
      * @throws DataDepth
      */
-    private function _setOptions(Config $xConfig, array $aOptions, string $sPrefix = '', int $nDepth = 0)
+    private function setValues(array $aValues, array $aOptions, string $sPrefix = '', int $nDepth = 0): array
     {
         $sPrefix = trim($sPrefix);
         // Check the max depth
@@ -125,14 +122,16 @@ class ConfigSetter
 
             $sName = trim($sName);
             // Save the value of this option
-            $this->_setOption($xConfig, $sPrefix, $sName, $xOption);
+            $aValues = $this->setValue($aValues, $sPrefix, $sName, $xOption);
             // Save the values of its sub-options
             if(is_array($xOption))
             {
                 // Recursively set the options in the array
-                $this->_setOptions($xConfig, $xOption, $sPrefix . $sName . '.', $nDepth + 1);
+                $aValues = $this->setValues($aValues, $xOption,
+                    $sPrefix . $sName . '.', $nDepth + 1);
             }
         }
+        return $aValues;
     }
 
     /**
@@ -142,10 +141,10 @@ class ConfigSetter
      * @param array $aOptions The options array
      * @param string $sKeys The key prefix of the config options
      *
-     * @return bool
+     * @return Config
      * @throws DataDepth
      */
-    public function setOptions(Config $xConfig, array $aOptions, string $sKeys = ''): bool
+    public function setOptions(Config $xConfig, array $aOptions, string $sKeys = ''): Config
     {
         // Find the config array in the input data
         $aKeys = explode('.', $sKeys);
@@ -155,13 +154,12 @@ class ConfigSetter
             {
                 if(!isset($aOptions[$sKey]) || !is_array($aOptions[$sKey]))
                 {
-                    return false;
+                    // No change if the required key is not found.
+                    return new Config($xConfig->getValues(), false);
                 }
                 $aOptions = $aOptions[$sKey];
             }
         }
-        $this->_setOptions($xConfig, $aOptions);
-
-        return true;
+        return new Config($this->setValues($xConfig->getValues(), $aOptions));
     }
 }
