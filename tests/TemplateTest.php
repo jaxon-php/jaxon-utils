@@ -24,6 +24,13 @@ final class TemplateTest extends TestCase
             $this->xTemplateEngine->render('test::simple', ['title' => 'Mr.', 'name' => 'Johnson']));
     }
 
+    public function testDefaultNamespace()
+    {
+        $this->xTemplateEngine->setDefaultNamespace('test');
+        $this->assertEquals('Good morning Mr. Johnson',
+            $this->xTemplateEngine->render('simple', ['title' => 'Mr.', 'name' => 'Johnson']));
+    }
+
     public function testRenderEmbeddedTemplate()
     {
         $this->assertEquals('Good morning Mr. Johnson.',

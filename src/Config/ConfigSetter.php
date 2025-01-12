@@ -27,7 +27,7 @@ class ConfigSetter
     /**
      * Create a new config object
      *
-     * @param array $aOptions The options array
+     * @param array $aOptions The options values to be set
      * @param string $sKeys The keys of the options in the array
      *
      * @return Config
@@ -54,7 +54,7 @@ class ConfigSetter
     /**
      * Set the value of a config option
      *
-     * @param array $aValues
+     * @param array $aValues The current options values
      * @param string $sPrefix The prefix for option names
      * @param string $sName The option name
      * @param mixed $xValue The option value
@@ -97,15 +97,16 @@ class ConfigSetter
     /**
      * Recursively set Jaxon options from a data array
      *
-     * @param array $aValues
-     * @param array $aOptions The options array
+     * @param array $aValues The current options values
+     * @param array $aOptions The options values to be set
      * @param string $sPrefix The prefix for option names
      * @param int $nDepth The depth from the first call
      *
      * @return array
      * @throws DataDepth
      */
-    private function setValues(array $aValues, array $aOptions, string $sPrefix = '', int $nDepth = 0): array
+    private function setValues(array $aValues, array $aOptions,
+        string $sPrefix = '', int $nDepth = 0): array
     {
         $sPrefix = trim($sPrefix);
         // Check the max depth
@@ -127,8 +128,8 @@ class ConfigSetter
             if(is_array($xOption))
             {
                 // Recursively set the options in the array
-                $aValues = $this->setValues($aValues, $xOption,
-                    $sPrefix . $sName . '.', $nDepth + 1);
+                $sPrefix .= $sName . '.';
+                $aValues = $this->setValues($aValues, $xOption, $sPrefix, $nDepth + 1);
             }
         }
         return $aValues;
@@ -138,7 +139,7 @@ class ConfigSetter
      * Set the values of an array of config options
      *
      * @param Config $xConfig
-     * @param array $aOptions The options array
+     * @param array $aOptions The options values to be set
      * @param string $sKeys The key prefix of the config options
      *
      * @return Config
