@@ -127,9 +127,9 @@ class ConfigSetter
             // Save the values of its sub-options
             if(is_array($xOption))
             {
-                // Recursively set the options in the array
-                $sPrefix .= $sName . '.';
-                $aValues = $this->setValues($aValues, $xOption, $sPrefix, $nDepth + 1);
+                // Recursively set the options in the array. Important to set a new var.
+                $sNextPrefix = $sPrefix . $sName . '.';
+                $aValues = $this->setValues($aValues, $xOption, $sNextPrefix, $nDepth + 1);
             }
         }
         return $aValues;
