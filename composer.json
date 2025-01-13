@@ -14,7 +14,6 @@
     },
     "require": {
         "php": ">=8.0",
-        "ext-json": "*",
         "tedivm/jshrink": "^1.4"
     },
     "require-dev": {

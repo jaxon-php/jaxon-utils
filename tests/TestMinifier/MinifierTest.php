@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\Utils\Tests;
+namespace Jaxon\Utils\Tests\TestMinifier;
 
 use Jaxon\Utils\File\FileMinifier;
 use PHPUnit\Framework\TestCase;

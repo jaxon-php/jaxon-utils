@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\Utils\Tests;
+namespace Jaxon\Utils\Tests\TestTemplate;
 
 use PHPUnit\Framework\TestCase;
 use Jaxon\Utils\Template\TemplateEngine;

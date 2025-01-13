@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\Utils\Tests;
+namespace Jaxon\Utils\Tests\TestUriDetector;
 
 use Jaxon\Utils\Http\UriDetector;
 use Jaxon\Utils\Http\UriException;

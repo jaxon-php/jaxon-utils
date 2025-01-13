@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaxon\Utils\Tests;
+namespace Jaxon\Utils\Tests\TestTranslator;
 
 use Jaxon\Utils\Translation\Translator;
 use PHPUnit\Framework\TestCase;
