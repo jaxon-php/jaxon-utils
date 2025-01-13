@@ -15,7 +15,7 @@ final class TemplateTest extends TestCase
     protected function setUp(): void
     {
         $this->xTemplateEngine = new TemplateEngine();
-        $this->xTemplateEngine->addNamespace('test', __DIR__ . '/templates', '.php');
+        $this->xTemplateEngine->addNamespace('test', __DIR__ . '/../templates', '.php');
     }
 
     public function testTemplate()

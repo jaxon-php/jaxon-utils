@@ -15,18 +15,18 @@ final class TranslatorTest extends TestCase
     protected function setUp(): void
     {
         $this->xTranslator = new Translator();
-        $this->xTranslator->loadTranslations(__DIR__ . '/translations/test.en.php', 'en');
-        $this->xTranslator->loadTranslations(__DIR__ . '/translations/test.fr.php', 'fr');
+        $this->xTranslator->loadTranslations(__DIR__ . '/../translations/test.en.php', 'en');
+        $this->xTranslator->loadTranslations(__DIR__ . '/../translations/test.fr.php', 'fr');
     }
 
     public function testFileWithBadData()
     {
-        $this->assertFalse($this->xTranslator->loadTranslations(__DIR__ . '/translations/error.php', 'en'));
+        $this->assertFalse($this->xTranslator->loadTranslations(__DIR__ . '/../translations/error.php', 'en'));
     }
 
     public function testFileNotFound()
     {
-        $this->assertFalse($this->xTranslator->loadTranslations(__DIR__ . '/translations/not-found.php', 'en'));
+        $this->assertFalse($this->xTranslator->loadTranslations(__DIR__ . '/../translations/not-found.php', 'en'));
     }
 
     public function testMissingEnTranslations()

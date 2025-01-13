@@ -12,8 +12,8 @@ final class MinifierTest extends TestCase
 {
     public function testFileNotFound()
     {
-        $sSrcFile = __DIR__ . '/minifier/nosrc.js';
-        $sDstMinFile = __DIR__ . '/minifier/dst.min.js';
+        $sSrcFile = __DIR__ . '/../minifier/nosrc.js';
+        $sDstMinFile = __DIR__ . '/../minifier/dst.min.js';
         $xMinifier = new FileMinifier();
 
         $this->assertFalse($xMinifier->minify($sSrcFile, $sDstMinFile));
@@ -21,8 +21,8 @@ final class MinifierTest extends TestCase
 
     public function testFileError()
     {
-        $sSrcFile = __DIR__ . '/minifier/error.js';
-        $sDstMinFile = __DIR__ . '/minifier/dst.min.js';
+        $sSrcFile = __DIR__ . '/../minifier/error.js';
+        $sDstMinFile = __DIR__ . '/../minifier/dst.min.js';
         $xMinifier = new FileMinifier();
 
         $this->assertFalse($xMinifier->minify($sSrcFile, $sDstMinFile));
@@ -30,9 +30,9 @@ final class MinifierTest extends TestCase
 
     public function testMinifier()
     {
-        $sSrcFile = __DIR__ . '/minifier/src.js';
-        $sSrcMinFile = __DIR__ . '/minifier/src.min.js';
-        $sDstMinFile = __DIR__ . '/minifier/dst.min.js';
+        $sSrcFile = __DIR__ . '/../minifier/src.js';
+        $sSrcMinFile = __DIR__ . '/../minifier/src.min.js';
+        $sDstMinFile = __DIR__ . '/../minifier/dst.min.js';
         $xMinifier = new FileMinifier();
 
         $this->assertTrue($xMinifier->minify($sSrcFile, $sDstMinFile));
