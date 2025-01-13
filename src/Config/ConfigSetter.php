@@ -111,7 +111,7 @@ class ConfigSetter
      */
     private function isArrayOfOptions($xValue): bool
     {
-        if(!is_array($xValue))
+        if(!is_array($xValue) || count($xValue) === 0)
         {
             return false;
         }
