@@ -79,6 +79,6 @@ class ConfigReader
     {
         // Read the options and save in the config.
         return $this->xConfigSetter
-            ->setOptions($xConfig, $this->read($sConfigFile), $sConfigSection);
+            ->setOptions($xConfig, $this->read($sConfigFile), '', $sConfigSection);
     }
 }
