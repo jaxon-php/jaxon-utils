@@ -1,23 +1,22 @@
 <?php
 
 /**
- * Config.php - Jaxon config manager
+ * Config.php
  *
- * Read and set Jaxon config options.
+ * An immutable class for config options.
  *
  * @package jaxon-core
  * @author Thierry Feuzeu <thierry.feuzeu@gmail.com>
- * @copyright 2022 Thierry Feuzeu <thierry.feuzeu@gmail.com>
+ * @copyright 2025 Thierry Feuzeu <thierry.feuzeu@gmail.com>
  * @license https://opensource.org/licenses/BSD-3-Clause BSD 3-Clause License
  * @link https://github.com/jaxon-php/jaxon-core
  */
 
 namespace Jaxon\Utils\Config;
 
-use function rtrim;
-use function strlen;
-use function strpos;
-use function substr;
+use function array_combine;
+use function array_keys;
+use function array_map;
 use function trim;
 
 class Config
@@ -85,20 +84,9 @@ class Config
      */
     public function getOptionNames(string $sPrefix): array
     {
-        $sPrefix = rtrim(trim($sPrefix), '.') . '.';
-        $sPrefixLen = strlen($sPrefix);
-        $aValues = [];
-        foreach($this->aValues as $sName => $xValue)
-        {
-            if(substr($sName, 0, $sPrefixLen) == $sPrefix)
-            {
-                $nNextDotPos = strpos($sName, '.', $sPrefixLen);
-                $sOptionName = $nNextDotPos === false ?
-                    substr($sName, $sPrefixLen) :
-                    substr($sName, $sPrefixLen, $nNextDotPos - $sPrefixLen);
-                $aValues[$sOptionName] = $sPrefix . $sOptionName;
-            }
-        }
-        return $aValues;
+        $sPrefix = trim($sPrefix, ' .');
+        $aNames = array_keys($this->aValues[$sPrefix] ?? []);
+        $aFullNames = array_map(fn($sName) => "$sPrefix.$sName", $aNames);
+        return array_combine($aNames, $aFullNames);
     }
 }

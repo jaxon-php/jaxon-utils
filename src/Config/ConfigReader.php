@@ -1,7 +1,9 @@
 <?php
 
 /**
- * ConfigReader.php - Jaxon config reader
+ * ConfigReader.php
+ *
+ * Read config values from files.
  *
  * @package jaxon-core
  * @author Thierry Feuzeu <thierry.feuzeu@gmail.com>

@@ -1,7 +1,9 @@
 <?php
 
 /**
- * ConfigSetter.php - Jaxon config setter
+ * ConfigSetter.php
+ *
+ * Set values in immutable config objects.
  *
  * @package jaxon-core
  * @author Thierry Feuzeu <thierry.feuzeu@gmail.com>
@@ -14,8 +16,9 @@ namespace Jaxon\Utils\Config;
 
 use Jaxon\Utils\Config\Exception\DataDepth;
 
+use function array_filter;
 use function array_keys;
-use function array_key_exists;
+use function array_map;
 use function array_merge;
 use function array_pop;
 use function count;
@@ -45,6 +48,8 @@ class ConfigSetter
     }
 
     /**
+     * Get the last entry from and array and return its length
+     *
      * @param string $sLastName
      * @param array $aNames
      *
@@ -54,52 +59,6 @@ class ConfigSetter
     {
         $sLastName = array_pop($aNames);
         return count($aNames);
-    }
-
-    /**
-     * Set the value of a config option
-     *
-     * @param array $aValues The current options values
-     * @param string $sName The option name
-     * @param mixed $xValue The option value
-     *
-     * @return array
-     */
-    private function setValue(array $aValues, string $sName, $xValue): array
-    {
-        $sOptionName = $sName;
-        $xOptionValue = $xValue;
-        // Given an option name like a.b.c, the values of a and a.b must also be set.
-        $sLastName = '';
-        $aNames = explode('.', $sName);
-        while($this->pop($sLastName, $aNames) > 0)
-        {
-            $sName = implode('.', $aNames);
-            if(!array_key_exists($sName, $aValues))
-            {
-                $aValues[$sName] = [];
-            }
-            $aValues[$sName] = array_merge($aValues[$sName], [$sLastName => $xValue]);
-            $xValue = $aValues[$sName];
-        }
-
-        // Set the input option value.
-        $aValues[$sOptionName] = $xOptionValue;
-        return $aValues;
-    }
-
-    /**
-     * Set the value of a config option
-     *
-     * @param Config $xConfig
-     * @param string $sName The option name
-     * @param mixed $xValue The option value
-     *
-     * @return Config
-     */
-    public function setOption(Config $xConfig, string $sName, $xValue): Config
-    {
-        return new Config($this->setValue($xConfig->getValues(), $sName, $xValue));
     }
 
     /**
@@ -123,6 +82,65 @@ class ConfigSetter
             }
         }
         return true;
+    }
+
+    /**
+     * Get an array of options names
+     *
+     * @param string $sName
+     *
+     * @return array
+     */
+    private function explodeOptionName(string $sName): array
+    {
+        $aNames = explode('.', $sName);
+        $aNames = array_map(fn($sVal) => trim($sVal), $aNames);
+        return array_filter($aNames, fn($sVal) => $sVal !== '');
+    }
+
+    /**
+     * Set the value of a config option
+     *
+     * @param array $aValues The current options values
+     * @param string $sOptionName The option name
+     * @param mixed $xOptionValue The option value
+     *
+     * @return array
+     */
+    private function setValue(array $aValues, string $sOptionName, $xOptionValue): array
+    {
+        // Given an option name like a.b.c, the values of a and a.b must also be set.
+        $sName = $sOptionName;
+        $xValue = $xOptionValue;
+        $sLastName = '';
+        $aNames = $this->explodeOptionName($sName);
+        while($this->pop($sLastName, $aNames) > 0)
+        {
+            $sName = implode('.', $aNames);
+            // The current value is deleted if it is not an array of options.
+            $xCurrentValue = isset($aValues[$sName]) &&
+                $this->isArrayOfOptions($aValues[$sName]) ? $aValues[$sName] : [];
+            $aValues[$sName] = array_merge($xCurrentValue, [$sLastName => $xValue]);
+            $xValue = $aValues[$sName];
+        }
+
+        // Set the input option value.
+        $aValues[$sOptionName] = $xOptionValue;
+        return $aValues;
+    }
+
+    /**
+     * Set the value of a config option
+     *
+     * @param Config $xConfig
+     * @param string $sName The option name
+     * @param mixed $xValue The option value
+     *
+     * @return Config
+     */
+    public function setOption(Config $xConfig, string $sName, $xValue): Config
+    {
+        return new Config($this->setValue($xConfig->getValues(), $sName, $xValue));
     }
 
     /**
@@ -156,8 +174,7 @@ class ConfigSetter
                 continue;
             }
             // Save the value of this option
-            $sNextName = $sNamePrefix . $sName;
-            $aValues = $this->setValue($aValues, $sNextName, $xValue);
+            $aValues = $this->setValue($aValues, $sNamePrefix . $sName, $xValue);
         }
         return $aValues;
     }
@@ -178,7 +195,7 @@ class ConfigSetter
     {
         // Find the config array in the input data
         $sValuePrefix = trim($sValuePrefix, ' .');
-        $aKeys = explode('.', $sValuePrefix);
+        $aKeys = $this->explodeOptionName($sValuePrefix);
         foreach($aKeys as $sKey)
         {
             if(($sKey))
