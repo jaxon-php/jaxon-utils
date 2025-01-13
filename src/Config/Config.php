@@ -17,6 +17,7 @@ namespace Jaxon\Utils\Config;
 use function array_combine;
 use function array_keys;
 use function array_map;
+use function count;
 use function trim;
 
 class Config
@@ -86,6 +87,12 @@ class Config
     {
         $sPrefix = trim($sPrefix, ' .');
         $aNames = array_keys($this->aValues[$sPrefix] ?? []);
+        if(count($aNames) === 0)
+        {
+            return [];
+        }
+
+        // The returned value is an array with short names as keys and full names as values.
         $aFullNames = array_map(fn($sName) => "$sPrefix.$sName", $aNames);
         return array_combine($aNames, $aFullNames);
     }
