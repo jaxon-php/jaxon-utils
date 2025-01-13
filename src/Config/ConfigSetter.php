@@ -15,17 +15,13 @@
 namespace Jaxon\Utils\Config;
 
 use Jaxon\Utils\Config\Exception\DataDepth;
+use Jaxon\Utils\Config\Reader\Value;
 
-use function array_filter;
-use function array_keys;
-use function array_map;
 use function array_merge;
 use function array_pop;
 use function count;
-use function explode;
 use function implode;
 use function is_array;
-use function is_string;
 use function trim;
 
 class ConfigSetter
@@ -62,43 +58,6 @@ class ConfigSetter
     }
 
     /**
-     * Check if a value is an array of options
-     *
-     * @param mixed $xValue
-     *
-     * @return bool
-     */
-    private function isArrayOfOptions($xValue): bool
-    {
-        if(!is_array($xValue) || count($xValue) === 0)
-        {
-            return false;
-        }
-        foreach(array_keys($xValue) as $xKey)
-        {
-            if(!is_string($xKey))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Get an array of options names
-     *
-     * @param string $sName
-     *
-     * @return array
-     */
-    private function explodeOptionName(string $sName): array
-    {
-        $aNames = explode('.', $sName);
-        $aNames = array_map(fn($sVal) => trim($sVal), $aNames);
-        return array_filter($aNames, fn($sVal) => $sVal !== '');
-    }
-
-    /**
      * Set the value of a config option
      *
      * @param array $aValues The current options values
@@ -113,13 +72,13 @@ class ConfigSetter
         $sName = $sOptionName;
         $xValue = $xOptionValue;
         $sLastName = '';
-        $aNames = $this->explodeOptionName($sName);
+        $aNames = Value::explodeName($sName);
         while($this->pop($sLastName, $aNames) > 0)
         {
             $sName = implode('.', $aNames);
             // The current value is deleted if it is not an array of options.
             $xCurrentValue = isset($aValues[$sName]) &&
-                $this->isArrayOfOptions($aValues[$sName]) ? $aValues[$sName] : [];
+                Value::containsOptions($aValues[$sName]) ? $aValues[$sName] : [];
             $aValues[$sName] = array_merge($xCurrentValue, [$sLastName => $xValue]);
             $xValue = $aValues[$sName];
         }
@@ -166,7 +125,7 @@ class ConfigSetter
         foreach($aOptions as $sName => $xValue)
         {
             $sName = trim($sName);
-            if($this->isArrayOfOptions($xValue))
+            if(Value::containsOptions($xValue))
             {
                 // Recursively set the options in the array. Important to set a new var.
                 $sNextPrefix = $sNamePrefix . $sName . '.';
@@ -195,7 +154,7 @@ class ConfigSetter
     {
         // Find the config array in the input data
         $sValuePrefix = trim($sValuePrefix, ' .');
-        $aKeys = $this->explodeOptionName($sValuePrefix);
+        $aKeys = Value::explodeName($sValuePrefix);
         foreach($aKeys as $sKey)
         {
             if(($sKey))
@@ -205,6 +164,7 @@ class ConfigSetter
                     // No change if the required key is not found.
                     return new Config($xConfig->getValues(), false);
                 }
+
                 $aOptions = $aOptions[$sKey];
             }
         }

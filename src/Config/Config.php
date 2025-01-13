@@ -14,7 +14,10 @@
 
 namespace Jaxon\Utils\Config;
 
+use Jaxon\Utils\Config\Reader\Value;
+
 use function array_combine;
+use function array_filter;
 use function array_keys;
 use function array_map;
 use function count;
@@ -77,23 +80,30 @@ class Config
     }
 
     /**
-     * Get the names of the options matching a given prefix
+     * Get the names of the options under a given key
      *
-     * @param string $sPrefix The prefix to match
+     * @param string $sKey The prefix to match
      *
      * @return array
      */
-    public function getOptionNames(string $sPrefix): array
+    public function getOptionNames(string $sKey): array
     {
-        $sPrefix = trim($sPrefix, ' .');
-        $aNames = array_keys($this->aValues[$sPrefix] ?? []);
-        if(count($aNames) === 0)
+        $sKey = trim($sKey, ' .');
+        $aKeys = Value::explodeName($sKey);
+        $aValues = $this->aValues;
+        foreach($aKeys as $_sKey)
+        {
+            $aValues = $aValues[$_sKey] ?? [];
+        }
+        $aValues = array_filter($aValues, fn($xValue) => Value::containsOptions($xValue));
+        if(count($aValues) === 0)
         {
             return [];
         }
 
         // The returned value is an array with short names as keys and full names as values.
-        $aFullNames = array_map(fn($sName) => "$sPrefix.$sName", $aNames);
+        $aNames = array_keys($aValues);
+        $aFullNames = array_map(fn($sName) => "$sKey.$sName", $aNames);
         return array_combine($aNames, $aFullNames);
     }
 }
