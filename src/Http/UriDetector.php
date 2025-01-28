@@ -227,8 +227,9 @@ class UriDetector
         $this->setQuery($aServerParams);
 
         // Build the URL: Start with scheme, user and pass
-        return $this->aUrl['scheme'] . '://' . $this->getUser() . $this->aUrl['host'] . $this->getPort() .
-            str_replace(['"', "'", '<', '>'], ['%22', '%27', '%3C', '%3E'], $this->getPath() . $this->getQuery());
+        return $this->aUrl['scheme'] . '://' . $this->getUser() . $this->aUrl['host'] .
+            $this->getPort() . str_replace(['"', "'", '<', '>'],
+                ['%22', '%27', '%3C', '%3E'], $this->getPath() . $this->getQuery());
     }
 
     /**
