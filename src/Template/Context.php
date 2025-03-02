@@ -9,7 +9,7 @@
  * class, which will then provide the template variables, and the
  * render() method, to render a template inside of another.
  *
- * @package jaxon-core
+ * @package jaxon-utils
  * @author Thierry Feuzeu <thierry.feuzeu@gmail.com>
  * @copyright 2022 Thierry Feuzeu <thierry.feuzeu@gmail.com>
  * @license https://opensource.org/licenses/BSD-3-Clause BSD 3-Clause License
