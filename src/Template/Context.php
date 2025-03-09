@@ -97,7 +97,7 @@ class Context
      *
      * @return void
      */
-    public function extend(string $template): void
+    public function extends(string $template): void
     {
         $this->__extends__ = new Context($this->__namespaces__,
             $this->__default_namespace__, $template);

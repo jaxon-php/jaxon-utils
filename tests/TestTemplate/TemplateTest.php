@@ -34,7 +34,7 @@ final class TemplateTest extends TestCase
     public function testRenderEmbeddedTemplate()
     {
         $this->assertEquals('Good morning Mr. Johnson.',
-            $this->xTemplateEngine->render('test::embedded-render', ['title' => 'Mr.', 'name' => 'Johnson']));
+            $this->xTemplateEngine->render('test::embedded-content', ['title' => 'Mr.', 'name' => 'Johnson']));
     }
 
     public function testIncludeEmbeddedTemplate()
