@@ -63,7 +63,7 @@ class Context
      */
     public function __get(string $name)
     {
-        return $this->__properties__[$name];
+        return $this->__properties__[$name] ?? '';
     }
 
     /**
