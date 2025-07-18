@@ -54,7 +54,7 @@ class Translator
      *
      * @return void
      */
-    public function setLocale(string $sLocale)
+    public function setLocale(string $sLocale): void
     {
         if(($sLocale = trim($sLocale)))
         {
@@ -71,7 +71,7 @@ class Translator
      *
      * @return void
      */
-    private function _loadTranslations(string $sLanguage, string $sPrefix, array $aTranslations)
+    private function _loadTranslations(string $sLanguage, string $sPrefix, array $aTranslations): void
     {
         foreach($aTranslations as $sKey => $xTranslation)
         {

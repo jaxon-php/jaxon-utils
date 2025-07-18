@@ -61,7 +61,7 @@ class Context
      *
      * @return mixed
      */
-    public function __get(string $name)
+    public function __get(string $name): mixed
     {
         return $this->__properties__[$name] ?? '';
     }
@@ -72,7 +72,7 @@ class Context
      *
      * @return void
      */
-    public function __set(string $name, $value)
+    public function __set(string $name, $value): void
     {
         $this->__properties__[$name] = $value;
     }
@@ -85,7 +85,7 @@ class Context
      *
      * @return void
      */
-    protected function include(string $template, array $vars = [])
+    protected function include(string $template, array $vars = []): void
     {
         $context = new Context($this->__namespaces__,
             $this->__default_namespace__, $template);
@@ -110,7 +110,7 @@ class Context
      *
      * @return void
      */
-    public function block(string $name)
+    public function block(string $name): void
     {
         ob_start();
         $this->__block_name__ = $name;
@@ -123,7 +123,7 @@ class Context
      *
      * @return void
      */
-    public function endblock(Closure $filter = null)
+    public function endblock(Closure $filter = null): void
     {
         $content = ob_get_clean();
         $this->__set($this->__block_name__, !$filter ? $content : $filter($content));

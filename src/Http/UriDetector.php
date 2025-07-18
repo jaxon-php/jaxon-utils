@@ -41,7 +41,7 @@ class UriDetector
      *
      * @return void
      */
-    private function setScheme(array $aServerParams)
+    private function setScheme(array $aServerParams): void
     {
         if(isset($this->aUrl['scheme']))
         {
@@ -70,7 +70,7 @@ class UriDetector
      *
      * @return void
      */
-    private function setHostFromServer(array $aServerParams, string $sKey)
+    private function setHostFromServer(array $aServerParams, string $sKey): void
     {
         if(isset($this->aUrl['host']) || empty($aServerParams[$sKey]))
         {
@@ -90,7 +90,7 @@ class UriDetector
      * @return void
      * @throws UriException
      */
-    private function setHost(array $aServerParams)
+    private function setHost(array $aServerParams): void
     {
         $this->setHostFromServer($aServerParams, 'HTTP_X_FORWARDED_HOST');
         $this->setHostFromServer($aServerParams, 'HTTP_HOST');
@@ -110,7 +110,7 @@ class UriDetector
      *
      * @return void
      */
-    private function setPath(array $aServerParams)
+    private function setPath(array $aServerParams): void
     {
         if(isset($this->aUrl['path']) && strlen(basename($this->aUrl['path'])) === 0)
         {
@@ -171,7 +171,7 @@ class UriDetector
      *
      * @return void
      */
-    private function setQuery(array $aServerParams)
+    private function setQuery(array $aServerParams): void
     {
         if(empty($this->aUrl['query']))
         {

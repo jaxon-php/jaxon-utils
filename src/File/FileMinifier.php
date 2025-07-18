@@ -31,7 +31,7 @@ class FileMinifier
      *
      * @return string|false
      */
-    private function readFile(string $sPath)
+    private function readFile(string $sPath): bool|string
     {
         try
         {
@@ -50,7 +50,7 @@ class FileMinifier
      *
      * @return string|false
      */
-    private function minifyCode(string $sCode)
+    private function minifyCode(string $sCode): bool|string
     {
         try
         {
