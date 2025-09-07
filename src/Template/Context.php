@@ -123,7 +123,7 @@ class Context
      *
      * @return void
      */
-    public function endblock(Closure $filter = null): void
+    public function endblock(?Closure $filter = null): void
     {
         $content = ob_get_clean();
         $this->__set($this->__block_name__, !$filter ? $content : $filter($content));
