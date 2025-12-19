@@ -22,7 +22,7 @@ final class MinifierTest extends TestCase
     public function testFileError()
     {
         $sSrcFile = __DIR__ . '/../minifier/error.js';
-        $sDstMinFile = __DIR__ . '/../minifier/dst.min.js';
+        $sDstMinFile = __DIR__ . '/../minifier/error.min.js';
         $xMinifier = new FileMinifier();
 
         $this->assertFalse($xMinifier->minify($sSrcFile, $sDstMinFile));
