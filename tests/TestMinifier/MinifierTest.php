@@ -19,6 +19,15 @@ final class MinifierTest extends TestCase
         $this->assertFalse($xMinifier->minify($sSrcFile, $sDstMinFile));
     }
 
+    public function testWrongExtension()
+    {
+        $sSrcFile = __DIR__ . '/../minifier/img.png';
+        $sDstMinFile = __DIR__ . '/../minifier/img.min.png';
+        $xMinifier = new FileMinifier();
+
+        $this->assertFalse($xMinifier->minify($sSrcFile, $sDstMinFile));
+    }
+
     public function testFileError()
     {
         $sSrcFile = __DIR__ . '/../minifier/error.js';
@@ -28,11 +37,23 @@ final class MinifierTest extends TestCase
         $this->assertFalse($xMinifier->minify($sSrcFile, $sDstMinFile));
     }
 
-    public function testMinifier()
+    public function testJsMinifier()
     {
         $sSrcFile = __DIR__ . '/../minifier/src.js';
         $sSrcMinFile = __DIR__ . '/../minifier/src.min.js';
         $sDstMinFile = __DIR__ . '/../minifier/dst.min.js';
+        $xMinifier = new FileMinifier();
+
+        $this->assertTrue($xMinifier->minify($sSrcFile, $sDstMinFile));
+        $this->assertTrue(file_exists($sDstMinFile));
+        $this->assertEquals(filesize($sSrcMinFile), filesize($sDstMinFile));
+    }
+
+    public function testCssMinifier()
+    {
+        $sSrcFile = __DIR__ . '/../minifier/src.css';
+        $sSrcMinFile = __DIR__ . '/../minifier/src.min.css';
+        $sDstMinFile = __DIR__ . '/../minifier/dst.min.css';
         $xMinifier = new FileMinifier();
 
         $this->assertTrue($xMinifier->minify($sSrcFile, $sDstMinFile));
