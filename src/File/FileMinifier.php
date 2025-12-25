@@ -39,9 +39,9 @@ class FileMinifier
     }
 
     /**
-     * Minify javascript or css code
+     * Minify javascript code
      *
-     * @param string $sCode The javascript or css code to be minified
+     * @param string $sCode The javascript code to be minified
      *
      * @return string|false
      */
@@ -59,9 +59,9 @@ class FileMinifier
     }
 
     /**
-     * Minify javascript or css code
+     * Minify css code
      *
-     * @param string $sCode The javascript or css code to be minified
+     * @param string $sCode The css code to be minified
      *
      * @return string|false
      */
