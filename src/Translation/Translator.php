@@ -144,9 +144,7 @@ class Translator
         $sMessage = $this->aTranslations[$sLanguage][$sText];
         if(!empty($aPlaceHolders))
         {
-            $aVars = array_map(function($sVar) {
-                return ':' . $sVar;
-            }, array_keys($aPlaceHolders));
+            $aVars = array_map(fn($sVar) => ":$sVar", array_keys($aPlaceHolders));
             $sMessage = str_replace($aVars, array_values($aPlaceHolders), $sMessage);
         }
         return $sMessage;
